@@ -1,0 +1,67 @@
+name: Publish package (pypi)
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        default: ${{github.event.repository.name}}
+        type: string
+      environment-name:
+        description: The name of the environment
+        default: pypi
+        type: string
+      python-version:
+        description: The Python version
+        default: ${{vars.PYTHON_VERSION || 'stable'}}
+        type: string
+    secrets:
+      # TODO: make optional when pypi/warehouse#11096 is fixed
+      PYPI_API_TOKEN:
+        description: An authentication token for pypi
+        required: true
+
+jobs:
+  build:
+    name: Build wheel on ${{matrix.os}}
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{inputs.python-version}}
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.16
+        with:
+          output-dir: dist
+      - name: Upload wheel artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: dist/*.whl
+          name: ${{matrix.os}}-wheels
+          retention-days: 2
+
+  package:
+    name: Publish Python package
+    needs: [build_wheels]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{inputs.environment-name}}
+      url: https://pypi.org/project/${{inputs.project-name}}/
+    # permissions:
+    #   id-token: write
+    steps:
+      - name: Download wheel artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: "*-wheels"
+          merge-multiple: true
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1.8
+        with:
+          password: ${{secrets.PYPI_API_TOKEN}}

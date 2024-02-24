@@ -1,0 +1,43 @@
+name: Publish package (npm)
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        description: The name of the package
+        default: ${{github.event.repository.name}}
+        type: string
+      environment-name:
+        description: The name of the environment
+        default: npm
+        type: string
+      node-version:
+        description: The NodeJS version
+        default: ${{vars.NODE_VERSION || 'latest'}}
+        type: string
+    secrets:
+      NODE_AUTH_TOKEN:
+        description: An authentication token for npm
+        required: true
+
+jobs:
+  package:
+    name: Publish Node package
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{inputs.environment-name}}
+      url: https://www.npmjs.com/package/${{inputs.package-name}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{inputs.node-version}}
+          registry-url: https://registry.npmjs.org/
+      - name: Install packages
+        run: npm install
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
