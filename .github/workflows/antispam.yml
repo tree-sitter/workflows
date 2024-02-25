@@ -1,0 +1,68 @@
+name: Close spam pull requests
+
+on:
+  pull_request:
+    types: [opened]
+  workflow_call:
+    inputs:
+      deleted-files:
+        description: Files that should not be deleted
+        default: "LICENSE"
+        type: string
+      added-files:
+        description: Files that should not be added
+        default: "" # any
+        type: string
+      modified-files:
+        description: Files that should not be modified
+        default: "LICENSE"
+        type: string
+
+jobs:
+  first-timer:
+    name: New user
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.author_association == 'FIRST_TIMER'
+    steps:
+      - name: Close pull request
+        run: |-
+          gh pr close $PR_NUMBER -c 'New users are not allowed to submit pull requests'
+          gh pr lock $PR_NUMBER -r spam
+        env:
+          GH_TOKEN: ${{github.token}}
+          PR_NUMBER: ${{github.event.pull_request.number}}
+  first-time-contributor:
+    name: New contributor and suspicious changes
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+    steps:
+      - name: Check deleted files
+        id: deleted-files
+        uses: tj-actions/changed-files@v42
+        if: github.event.pull_request.body != ''
+        with:
+          files: ${{inputs.deleted-files}}
+      - name: Check added files
+        id: added-files
+        uses: tj-actions/changed-files@v42
+        if: github.event.pull_request.body != ''
+        with:
+          files: ${{inputs.added-files}}
+      - name: Check modified files
+        id: modified-files
+        uses: tj-actions/changed-files@v42
+        if: github.event.pull_request.body != ''
+        with:
+          files: ${{inputs.modified-files}}
+      - name: Close pull request
+        if: >-
+          github.event.pull_request.body == '' ||
+          steps.deleted-files.any_deleted == 'true' ||
+          steps.added-files.added_files_count == 1 ||
+          steps.modified-files.modified_files_count == 1
+        run: |-
+          gh pr close $PR_NUMBER -c 'Closed on suspicion of being spam'
+          gh pr lock $PR_NUMBER -r spam
+        env:
+          GH_TOKEN: ${{github.token}}
+          PR_NUMBER: ${{github.event.pull_request.number}}
