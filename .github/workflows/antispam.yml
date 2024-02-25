@@ -7,15 +7,21 @@ on:
     inputs:
       deleted-files:
         description: Files that should not be deleted
-        default: "LICENSE"
+        default: |-
+          LICENSE
+          .github/**
         type: string
       added-files:
         description: Files that should not be added
-        default: "" # any
+        default: |-
+          SECURITY.md
+          .github/**
         type: string
       modified-files:
         description: Files that should not be modified
-        default: "LICENSE"
+        default: |-
+          LICENSE
+          .github/**
         type: string
 
 jobs:
@@ -58,8 +64,8 @@ jobs:
         if: >-
           github.event.pull_request.body == '' ||
           steps.deleted-files.any_deleted == 'true' ||
-          steps.added-files.added_files_count == 1 ||
-          steps.modified-files.modified_files_count == 1
+          steps.added-files.added_files_count > 0 ||
+          steps.modified-files.modified_files_count > 0
         run: |-
           gh pr close $PR_NUMBER -c 'Closed on suspicion of being spam'
           gh pr lock $PR_NUMBER -r spam

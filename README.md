@@ -221,14 +221,20 @@ jobs:
 inputs:
   deleted-files:
     description: Files that should not be deleted
-    default: "LICENSE"
+    default: |-
+      LICENSE
+      .github/**
     type: string
   added-files:
     description: Files that should not be added
-    default: "" # any
+    default: |-
+      SECURITY.md
+      .github/**
     type: string
   modified-files:
     description: Files that should not be modified
-    default: "LICENSE"
+    default: |-
+      LICENSE
+      .github/**
     type: string
 ```
