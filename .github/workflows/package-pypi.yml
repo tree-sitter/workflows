@@ -4,6 +4,7 @@ on:
   workflow_call:
     inputs:
       package-name:
+        description: The name of the package
         default: ${{github.event.repository.name}}
         type: string
       environment-name:
@@ -51,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: ${{inputs.environment-name}}
-      url: https://pypi.org/project/${{inputs.project-name}}/
+      url: https://pypi.org/project/${{inputs.package-name}}/
     # permissions:
     #   id-token: write
     steps:
