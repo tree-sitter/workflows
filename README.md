@@ -148,21 +148,18 @@ jobs:
       - name: Set up the repo
         uses: tree-sitter/parser-setup-action@v1.1
       - name: Run tests
-        uses: tree-sitter/parser-test-action@v1.1
+        uses: tree-sitter/parser-test-action@v1.2
         with:
           test-library: ${{runner.os == 'Linux'}}
           examples: examples/**
       - name: Check for scanner changes
+        uses: tj-actions/changed-files@v42
         id: scanner-check
-        shell: sh
-        run: |-
-          {
-            test -f src/scanner.c && ! git diff --quiet HEAD^ -- "$_" \
-              && printf 'changed=true\n' || printf 'changed=false\n'
-          } >> "$GITHUB_OUTPUT"
+        with:
+          files: src/scanner.c
       - name: Fuzz scanner
         uses: tree-sitter/fuzz-action@v4
-        if: steps.scanner-check.outputs.changed == 'true'
+        if: steps.scanner-check.outputs.any_changed == 'true'
 ```
 
 ### Dependency update workflow
