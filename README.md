@@ -146,7 +146,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-14]
     steps:
       - name: Set up the repo
-        uses: tree-sitter/parser-setup-action@v1.1
+        uses: tree-sitter/parser-setup-action@v1.2
       - name: Run tests
         uses: tree-sitter/parser-test-action@v1.2
         with:

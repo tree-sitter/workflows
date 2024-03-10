@@ -34,6 +34,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
+          cache: pip
           python-version: ${{inputs.python-version}}
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16
@@ -62,6 +63,8 @@ jobs:
           path: dist
           pattern: "*-wheels"
           merge-multiple: true
+      - name: Check wheels
+        run: ls -l dist
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1.8
         with:
