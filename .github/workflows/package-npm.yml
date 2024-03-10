@@ -51,6 +51,7 @@ jobs:
 
   package:
     name: Publish Node package
+    needs: [build]
     runs-on: ubuntu-latest
     environment:
       name: ${{inputs.environment-name}}
