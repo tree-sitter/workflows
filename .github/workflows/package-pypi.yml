@@ -40,6 +40,11 @@ jobs:
         uses: pypa/cibuildwheel@v2.16
         with:
           output-dir: dist
+        env:
+          CIBW_ARCHS_WINDOWS: AMD64
+          CIBW_ARCHS_LINUX: x86_64
+          CIBW_ARCHS_MACOS: x86_64 arm64
+          CIBW_TEST_SKIP: "*arm64"
       - name: Upload wheel artifacts
         uses: actions/upload-artifact@v4
         with:
