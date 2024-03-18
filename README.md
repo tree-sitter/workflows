@@ -107,9 +107,9 @@ These workflows make use of our parser actions.
 
 This workflow uses all the following actions:
 
-- [parser-setup](https://github.com/tree-sitter/parser-setup-action)
+- [setup](https://github.com/tree-sitter/setup-action)
 - [parser-test](https://github.com/tree-sitter/parser-test-action)
-  (includes [parse](https://github.com/tree-sitter/parse-action))
+- [parse](https://github.com/tree-sitter/parse-action)
 - [fuzz](https://github.com/tree-sitter/fuzz-action)
 
 ```yaml
@@ -145,21 +145,45 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
     steps:
-      - name: Set up the repo
-        uses: tree-sitter/parser-setup-action@v1.2
-      - name: Run tests
-        uses: tree-sitter/parser-test-action@v1.2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up tree-sitter
+        uses: tree-sitter/setup-action/cli@v1
+      - name: Run parser and binding tests
+        uses: tree-sitter/parser-test-action@v2
         with:
-          test-library: ${{runner.os == 'Linux'}}
-          examples: examples/**
+          test-rust: ${{runner.os == 'Linux'}}
+          test-swift: ${{runner.os == 'macOS'}}
+      - name: Parse sample files
+        uses: tree-sitter/parse-action@v4
+        id: parse-files
+        with:
+          files: examples/**
+      - name: Upload failures artifact
+        uses: actions/upload-artifact@v4
+        if: "!cancelled() && steps.parse-files.outcome == 'failure'"
+        with:
+          name: failures-${{runner.os}}
+          path: ${{steps.parse-files.outputs.failures}}
+  fuzz:
+    name: Fuzz scanner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - name: Check for scanner changes
-        uses: tj-actions/changed-files@v42
         id: scanner-check
-        with:
-          files: src/scanner.c
-      - name: Fuzz scanner
+        run: |-
+          if git diff --quiet HEAD^ -- src/scanner.c; then
+            printf 'changed=false\n' >> "$GITHUB_OUTPUT"
+          else
+            printf 'changed=true\n' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Run the fuzzer
         uses: tree-sitter/fuzz-action@v4
-        if: steps.scanner-check.outputs.any_changed == 'true'
+        if: steps.scanner-check.outputs.changed == 'true'
 ```
 
 ### Dependency update workflow
@@ -189,7 +213,6 @@ jobs:
         with:
           cache: npm
       - name: Update dependencies
-        id: update
         uses: tree-sitter/parser-update-action@v1.1
         with:
           parent-name: c
