@@ -91,7 +91,7 @@ inputs:
     type: string
   python-version:
     description: The Python version
-    default: ${{vars.PYTHON_VERSION || 'stable'}}
+    default: ${{vars.PYTHON_VERSION || '3.x'}}
     type: string
 secrets:
   PYPI_API_TOKEN:
