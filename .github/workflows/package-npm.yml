@@ -38,10 +38,10 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
       - name: Build x64 binary
-        run: npm run prebuildify -- --arch x64
+        run: npm x -- prebuildify --strip --arch x64
       - name: Build arm64 binary
         if: runner.os == 'macOS'
-        run: npm run prebuildify -- --arch arm64
+        run: npm x -- prebuildify --strip --arch arm64
       - name: Upload prebuilds
         uses: actions/upload-artifact@v4
         with:
