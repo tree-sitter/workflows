@@ -36,6 +36,11 @@ jobs:
         with:
           cache: pip
           python-version: ${{inputs.python-version}}
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16
         with:
