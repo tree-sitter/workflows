@@ -99,6 +99,142 @@ secrets:
     required: true
 ```
 
+## Regenerate workflow
+
+This workflow can be used alongside dependabot updates to regenerate the parser.
+
+```yaml
+name: Regenerate parser
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
+
+jobs:
+  regenerate:
+    uses: tree-sitter/workflows/.github/workflows/regenerate.yml@main
+    if: github.actor == 'dependabot[bot]'
+```
+
+<details>
+<summary>Sample <code>.github/dependabot.yml</code> file</summary>
+
+```yaml
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: sunday
+    commit-message:
+      prefix: ci
+    labels:
+      - dependencies
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    versioning-strategy: increase
+    directory: /
+    schedule:
+      interval: weekly
+      day: sunday
+    commit-message:
+      prefix: build(deps)
+    labels:
+      - dependencies
+    groups:
+      npm:
+        patterns: ["*"]
+
+  # - package-ecosystem: cargo
+  #   directory: /
+  #   schedule:
+  #     interval: weekly
+  #     day: sunday
+  #   commit-message:
+  #     prefix: build(deps)
+  #   labels:
+  #     - dependencies
+  #   groups:
+  #     cargo:
+  #       patterns: ["*"]
+
+  # - package-ecosystem: pip
+  #   directory: /
+  #   schedule:
+  #     interval: weekly
+  #     day: sunday
+  #   commit-message:
+  #     prefix: build(deps)
+  #   labels:
+  #     - dependencies
+  #   groups:
+  #     pip:
+  #       patterns: ["*"]
+
+  # - package-ecosystem: swift
+  #   directory: /
+  #   schedule:
+  #     interval: weekly
+  #     day: sunday
+  #   commit-message:
+  #     prefix: build(deps)
+  #   labels:
+  #     - dependencies
+  #   groups:
+  #     swift:
+  #       patterns: ["*"]
+
+  # - package-ecosystem: gomod
+  #   directory: /bindings/go
+  #   schedule:
+  #     interval: weekly
+  #     day: sunday
+  #   commit-message:
+  #     prefix: build(deps)
+  #   labels:
+  #     - dependencies
+  #   groups:
+  #     go:
+  #       patterns: ["*"]
+```
+
+*You can also uncomment any other ecosystems you want to keep up to date.*
+
+</details>
+
+### options
+
+```yaml
+inputs:
+  node-version:
+    description: The NodeJS version
+    default: ${{vars.NODE_VERSION || 'latest'}}
+    type: string
+  update-scanner:
+    description: Update the scanner
+    default: false
+    type: boolean
+  commit-message:
+    description: The commit message
+    default: "build: regenerate parser [dependabot skip]"
+    type: string
+  commit-author-name:
+    description: The commit author's username
+    default: dependabot[bot]
+    type: string
+  commit-author-email:
+    description: The commit author's email
+    default: 49699333+dependabot[bot]@users.noreply.github.com
+    type: string
+```
+
 ## Reference workflows
 
 These workflows make use of our parser actions.
@@ -189,6 +325,11 @@ jobs:
 ### Dependency update workflow
 
 This workflow uses the [parser-update](https://github.com/tree-sitter/parser-update-action) action.
+
+> [!TIP]
+> It's recommended to use dependabot with the [regenerate workflow][] instead.
+
+[regenerate workflow]: #regenerate-workflow
 
 ```yaml
 name: Update dependencies
