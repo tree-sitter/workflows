@@ -22,7 +22,28 @@ on:
         required: true
 
 jobs:
-  build:
+  build_sdist:
+    name: Build source dist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build sources
+        run: |-
+          pip install build
+          python -mbuild -n -s
+      - name: Upload sources
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-sources
+          path: dist/*.tar.gz
+          retention-days: 2
+
+  build_wheels:
     name: Build wheel on ${{matrix.os}}
     runs-on: ${{matrix.os}}
     strategy:
@@ -54,12 +75,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: dist/*.whl
-          name: ${{matrix.os}}-wheels
+          name: dist-wheels-${{matrix.os}}
           retention-days: 2
 
   package:
     name: Publish Python package
-    needs: [build]
+    needs: [build_sdist, build_wheels]
     runs-on: ubuntu-latest
     environment:
       name: ${{inputs.environment-name}}
@@ -67,13 +88,13 @@ jobs:
     # permissions:
     #   id-token: write
     steps:
-      - name: Download wheel artifacts
+      - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           path: dist
-          pattern: "*-wheels"
+          pattern: dist-*
           merge-multiple: true
-      - name: Check wheels
+      - name: Check build artifacts
         run: ls -l dist
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1.8
