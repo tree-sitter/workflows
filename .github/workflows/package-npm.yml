@@ -3,6 +3,10 @@ name: Publish package (npm)
 on:
   workflow_call:
     inputs:
+      grammars:
+        description: The grammar folder(s)
+        default: .
+        type: string
       package-name:
         description: The name of the package
         default: ${{github.event.repository.name}}
@@ -21,8 +25,37 @@ on:
         required: true
 
 jobs:
-  build:
-    name: Build binary on ${{matrix.os}}
+  build_wasm:
+    name: Build WASM binaries
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up NodeJS
+        uses: actions/setup-node@v4
+        with:
+          cache: npm
+          node-version: ${{inputs.node-version}}
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+      - name: Build WASM binaries
+        shell: bash
+        run: |-
+          for dir in $GRAMMARS; do
+            npm x -- tree-sitter build --wasm "$dir"
+          done
+        env:
+          GRAMMARS: ${{inputs.grammars}}
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          path: "*.wasm"
+          name: prebuilds-WASM
+          retention-days: 2
+
+  build_node:
+    name: Build NodeJS binaries on ${{matrix.os}}
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
@@ -42,16 +75,16 @@ jobs:
       - name: Build arm64 binary
         if: runner.os == 'macOS'
         run: npm x -- prebuildify --strip --arch arm64
-      - name: Upload prebuilds
+      - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
           path: prebuilds/**
-          name: ${{matrix.os}}-prebuilds
+          name: prebuilds-${{runner.os}}
           retention-days: 2
 
   package:
     name: Publish Node package
-    needs: [build]
+    needs: [build_wasm, build_node]
     runs-on: ubuntu-latest
     environment:
       name: ${{inputs.environment-name}}
@@ -65,14 +98,16 @@ jobs:
           cache: npm
           node-version: ${{inputs.node-version}}
           registry-url: https://registry.npmjs.org/
-      - name: Download prebuilds
+      - name: Download binaries
         uses: actions/download-artifact@v4
         with:
           path: prebuilds
-          pattern: "*-prebuilds"
+          pattern: prebuilds-*
           merge-multiple: true
-      - name: Check prebuilds
+      - name: Check binaries
         run: tree prebuilds
+      - name: Move WASM binaries to root
+        run: mv -v prebuilds/*.wasm .
       - name: Publish to npm
         run: npm publish
         env:

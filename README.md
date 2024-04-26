@@ -37,6 +37,10 @@ jobs:
 
 ```yaml
 inputs:
+  grammars:
+    description: The grammar folder(s)
+    default: .
+    type: string
   package-name:
     description: The name of the package
     default: ${{github.event.repository.name}}
