@@ -53,6 +53,10 @@ inputs:
     description: The NodeJS version
     default: ${{vars.NODE_VERSION || 'latest'}}
     type: string
+  emscripten-version:
+    description: The Emscripten version
+    default: ${{vars.EMSCRIPTEN_VERSION || '3.1.55'}}
+    type: string
 secrets:
   NODE_AUTH_TOKEN:
     description: An authentication token for npm
