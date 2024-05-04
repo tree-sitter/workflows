@@ -20,15 +20,15 @@ concurrency:
 
 jobs:
   npm:
-    uses: tree-sitter/workflows/.github/workflows/package-npm.yml@main
+    uses: tree-sitter/workflows/package-npm@main
     secrets:
       NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
   crates:
-    uses: tree-sitter/workflows/.github/workflows/package-crates.yml@main
+    uses: tree-sitter/workflows/package-crates@main
     secrets:
       CARGO_REGISTRY_TOKEN: ${{secrets.CARGO_TOKEN}}
   pypi:
-    uses: tree-sitter/workflows/.github/workflows/package-pypi.yml@main
+    uses: tree-sitter/workflows/package-pypi@main
     secrets:
       PYPI_API_TOKEN: ${{secrets.PYPI_TOKEN}}
 ```
@@ -119,7 +119,7 @@ concurrency:
 
 jobs:
   regenerate:
-    uses: tree-sitter/workflows/.github/workflows/regenerate.yml@main
+    uses: tree-sitter/workflows/regenerate@main
     if: github.actor == 'dependabot[bot]'
 ```
 
