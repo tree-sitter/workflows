@@ -3,10 +3,6 @@ name: Publish package (npm)
 on:
   workflow_call:
     inputs:
-      grammars:
-        description: The grammar folder(s)
-        default: .
-        type: string
       package-name:
         description: The name of the package
         default: ${{github.event.repository.name}}
@@ -50,11 +46,9 @@ jobs:
       - name: Build WASM binaries
         shell: bash
         run: |-
-          for dir in $GRAMMARS; do
-            npm x -- tree-sitter build --wasm "$dir"
-          done
-        env:
-          GRAMMARS: ${{inputs.grammars}}
+          while read -r grammar; do
+            npm x -- tree-sitter build --wasm "${grammar%/grammar.js}"
+          done < <(find -name grammar.js -not -path './node_modules/*')
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
@@ -115,6 +109,7 @@ jobs:
       - name: Check binaries
         run: tree prebuilds
       - name: Move WASM binaries to root
+        continue-on-error: true
         run: mv -v prebuilds/*.wasm .
       - name: Publish to npm
         run: npm publish
