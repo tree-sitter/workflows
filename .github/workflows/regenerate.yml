@@ -42,15 +42,15 @@ jobs:
     needs: [metadata]
     if: needs.metadata.outputs.package-ecosystem == 'npm_and_yarn'
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{github.head_ref}}
       - name: Set up NodeJS
         uses: actions/setup-node@v4
         with:
           cache: npm
           node-version: ${{inputs.node-version}}
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{github.head_ref}}
       - name: Regenerate parser
         run: |-
           npm ci --legacy-peer-deps
