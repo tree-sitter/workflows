@@ -32,7 +32,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{inputs.python-version}}
       - name: Build sources
         run: |-
           pip install build wheel
@@ -58,11 +58,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          cache: pip
-          python-version: ${{inputs.python-version}}
       - name: Set up QEMU
         if: matrix.qemu_arch != ''
         uses: docker/setup-qemu-action@v3
