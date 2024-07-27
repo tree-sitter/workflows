@@ -13,7 +13,7 @@ on:
         type: string
       node-version:
         description: The NodeJS version
-        default: ${{vars.NODE_VERSION || 'latest'}}
+        default: ${{vars.NODE_VERSION || '20'}}
         type: string
       emscripten-version:
         description: The Emscripten version
@@ -26,7 +26,7 @@ on:
 
 jobs:
   build_wasm:
-    name: Build WASM binaries
+    name: Build Wasm binaries
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -43,7 +43,7 @@ jobs:
           version: ${{inputs.emscripten-version}}
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
-      - name: Build WASM binaries
+      - name: Build Wasm binaries
         shell: bash
         run: |-
           while read -r grammar; do
@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: "*.wasm"
-          name: prebuilds-WASM
+          name: prebuilds-Wasm
           retention-days: 2
 
   build_node:
@@ -61,7 +61,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -85,7 +85,7 @@ jobs:
           retention-days: 2
 
   package:
-    name: Publish Node package
+    name: Publish NodeJS package
     needs: [build_wasm, build_node]
     runs-on: ubuntu-latest
     environment:
@@ -108,7 +108,7 @@ jobs:
           merge-multiple: true
       - name: Check binaries
         run: tree prebuilds
-      - name: Move WASM binaries to root
+      - name: Move Wasm binaries to root
         continue-on-error: true
         run: mv -v prebuilds/*.wasm .
       - name: Publish to npm
