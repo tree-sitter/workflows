@@ -20,7 +20,7 @@ on:
         default: ${{vars.EMSCRIPTEN_VERSION || '3.1.55'}}
         type: string
       runs-on-linux:
-        decsription: The type of Linux machine to run the job on.
+        description: The runner image to run the job on.
         default: ubuntu-20.04
         type: string
     secrets:
