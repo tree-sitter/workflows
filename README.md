@@ -47,11 +47,11 @@ inputs:
     type: string
   node-version:
     description: The NodeJS version
-    default: ${{vars.NODE_VERSION || 'latest'}}
+    default: ${{vars.NODE_VERSION || '20'}}
     type: string
   emscripten-version:
     description: The Emscripten version
-    default: ${{vars.EMSCRIPTEN_VERSION || '3.1.55'}}
+    default: ${{vars.EMSCRIPTEN_VERSION || '3.1.64'}}
     type: string
   ubuntu-version:
     description: The version of the Ubuntu runner image

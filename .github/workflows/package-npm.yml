@@ -17,7 +17,7 @@ on:
         type: string
       emscripten-version:
         description: The Emscripten version
-        default: ${{vars.EMSCRIPTEN_VERSION || '3.1.55'}}
+        default: ${{vars.EMSCRIPTEN_VERSION || '3.1.64'}}
         type: string
       ubuntu-version:
         description: The version of the Ubuntu runner image
