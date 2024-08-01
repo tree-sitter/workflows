@@ -31,7 +31,7 @@ on:
 jobs:
   build_wasm:
     name: Build Wasm binaries
-    runs-on: ${{inputs.ubuntu-version}}
+    runs-on: ubuntu-${{inputs.ubuntu-version}}
     continue-on-error: true
     steps:
       - name: Checkout repository
@@ -65,7 +65,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [${{inputs.ubuntu-version}}, windows-latest, macos-latest]
+        os: [ubuntu-${{inputs.ubuntu-version}}, windows-latest, macos-latest]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -91,7 +91,7 @@ jobs:
   package:
     name: Publish NodeJS package
     needs: [build_wasm, build_node]
-    runs-on: ${{inputs.ubuntu-version}}
+    runs-on: ubuntu-${{inputs.ubuntu-version}}
     environment:
       name: ${{inputs.environment-name}}
       url: https://www.npmjs.com/package/${{inputs.package-name}}
