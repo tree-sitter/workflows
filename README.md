@@ -53,6 +53,10 @@ inputs:
     description: The Emscripten version
     default: ${{vars.EMSCRIPTEN_VERSION || '3.1.55'}}
     type: string
+  ubuntu-version:
+    description: The version of the Ubuntu runner image
+    default: ${{vars.UBUNTU_VERSION || '20.04'}}
+    type: string
 secrets:
   NODE_AUTH_TOKEN:
     description: An authentication token for npm

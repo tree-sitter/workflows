@@ -19,6 +19,10 @@ on:
         description: The Emscripten version
         default: ${{vars.EMSCRIPTEN_VERSION || '3.1.55'}}
         type: string
+      ubuntu-version:
+        description: The version of the Ubuntu runner image
+        default: ${{vars.UBUNTU_VERSION || '20.04'}}
+        type: string
     secrets:
       NODE_AUTH_TOKEN:
         description: An authentication token for npm
@@ -27,7 +31,7 @@ on:
 jobs:
   build_wasm:
     name: Build Wasm binaries
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-${{inputs.ubuntu-version}}
     continue-on-error: true
     steps:
       - name: Checkout repository
@@ -61,7 +65,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-${{inputs.ubuntu-version}}, windows-latest, macos-latest]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -87,7 +91,7 @@ jobs:
   package:
     name: Publish NodeJS package
     needs: [build_wasm, build_node]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-${{inputs.ubuntu-version}}
     environment:
       name: ${{inputs.environment-name}}
       url: https://www.npmjs.com/package/${{inputs.package-name}}
