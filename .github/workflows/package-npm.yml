@@ -23,6 +23,10 @@ on:
         description: The version of the Ubuntu runner image
         default: ${{vars.UBUNTU_VERSION || '20.04'}}
         type: string
+      generate:
+        description: Generate the parser artifacts
+        default: false
+        type: boolean
     secrets:
       NODE_AUTH_TOKEN:
         description: An authentication token for npm
@@ -36,6 +40,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - uses: tree-sitter/setup-action@v1
+        if: ${{ inputs.generate }}
+        with:
+          install-lib: false
+      - name: Regenerate Parser
+        if: ${{ inputs.generate }}
+        run: tree-sitter generate --no-bindings
       - name: Set up NodeJS
         uses: actions/setup-node@v4
         with:
@@ -72,6 +83,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - uses: tree-sitter/setup-action@v1
+        if: ${{ inputs.generate }}
+        with:
+          install-lib: false
+      - name: Regenerate Parser
+        if: ${{ inputs.generate }}
+        run: tree-sitter generate --no-bindings
       - name: Set up NodeJS
         uses: actions/setup-node@v4
         with:
