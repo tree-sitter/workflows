@@ -57,6 +57,10 @@ inputs:
     description: The version of the Ubuntu runner image
     default: ${{vars.UBUNTU_VERSION || '20.04'}}
     type: string
+  generate:
+    description: Generate the parser artifacts
+    default: false
+    type: boolean
 secrets:
   NODE_AUTH_TOKEN:
     description: An authentication token for npm
@@ -79,6 +83,10 @@ inputs:
     description: The Rust toolchain
     default: ${{vars.RUST_TOOLCHAIN || 'stable'}}
     type: string
+  generate:
+    description: Generate the parser artifacts
+    default: false
+    type: boolean
 secrets:
   CARGO_REGISTRY_TOKEN:
     description: An authentication token for crates.io
@@ -101,6 +109,10 @@ inputs:
     description: The Python version
     default: ${{vars.PYTHON_VERSION || '3.x'}}
     type: string
+  generate:
+    description: Generate the parser artifacts
+    default: false
+    type: boolean
 secrets:
   PYPI_API_TOKEN:
     description: An authentication token for pypi

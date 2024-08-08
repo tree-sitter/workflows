@@ -15,6 +15,10 @@ on:
         description: The Rust toolchain
         default: ${{vars.RUST_TOOLCHAIN || 'stable'}}
         type: string
+      generate:
+        description: Generate the parser artifacts
+        default: false
+        type: boolean
     secrets:
       CARGO_REGISTRY_TOKEN:
         description: An authentication token for crates.io
@@ -30,6 +34,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - uses: tree-sitter/setup-action@v1
+        if: ${{ inputs.generate }}
+        with:
+          install-lib: false
+      - name: Regenerate Parser
+        if: ${{ inputs.generate }}
+        run: tree-sitter generate --no-bindings
       - name: Set up Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:

@@ -15,6 +15,10 @@ on:
         description: The Python version
         default: ${{vars.PYTHON_VERSION || '3.x'}}
         type: string
+      generate:
+        description: Generate the parser artifacts
+        default: false
+        type: boolean
     secrets:
       # TODO: make optional when pypi/warehouse#11096 is fixed
       PYPI_API_TOKEN:
@@ -58,6 +62,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - uses: tree-sitter/setup-action@v1
+        if: ${{ inputs.generate }}
+        with:
+          install-lib: false
+      - name: Regenerate Parser
+        if: ${{ inputs.generate }}
+        run: tree-sitter generate --no-bindings
       - name: Set up QEMU
         if: matrix.qemu_arch != ''
         uses: docker/setup-qemu-action@v3
