@@ -38,7 +38,7 @@ jobs:
         with:
           python-version: ${{inputs.python-version}}
       - name: Install dependencies
-        run: pip install build setuptools wheel
+        run: pip install --upgrade pip build setuptools wheel
       - name: Build sources
         run: python -mbuild -n -s
       - name: Upload sources
