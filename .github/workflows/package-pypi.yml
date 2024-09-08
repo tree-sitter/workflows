@@ -76,7 +76,7 @@ jobs:
         with:
           platforms: ${{matrix.qemu_arch}}
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.18
+        uses: pypa/cibuildwheel@v2.20
         with:
           output-dir: dist
         env:
