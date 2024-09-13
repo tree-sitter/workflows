@@ -100,7 +100,6 @@ jobs:
       - name: Build x64 binary
         run: npm x -- prebuildify --strip --arch x64
       - name: Build arm64 binary
-        if: runner.os == 'macOS'
         run: npm x -- prebuildify --strip --arch arm64
       - name: Upload binaries
         uses: actions/upload-artifact@v4
