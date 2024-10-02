@@ -37,6 +37,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{inputs.python-version}}
+      - name: Set up tree-sitter CLI
+        if: ${{inputs.generate}}
+        uses: tree-sitter/setup-action/cli@v1
+      - name: Regenerate parser
+        if: ${{inputs.generate}}
+        run: tree-sitter generate
       - name: Install dependencies
         run: pip install --upgrade pip build setuptools wheel
       - name: Build sources
@@ -63,18 +69,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - uses: tree-sitter/setup-action@v1
-        if: ${{ inputs.generate }}
-        with:
-          install-lib: false
-      - name: Regenerate Parser
-        if: ${{ inputs.generate }}
-        run: tree-sitter generate --no-bindings
       - name: Set up QEMU
         if: matrix.qemu_arch != ''
         uses: docker/setup-qemu-action@v3
         with:
           platforms: ${{matrix.qemu_arch}}
+      - name: Set up tree-sitter CLI
+        if: ${{inputs.generate}}
+        uses: tree-sitter/setup-action/cli@v1
+      - name: Regenerate parser
+        if: ${{inputs.generate}}
+        run: tree-sitter generate
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21
         with:

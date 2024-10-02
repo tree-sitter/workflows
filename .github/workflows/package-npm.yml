@@ -40,13 +40,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - uses: tree-sitter/setup-action@v1
-        if: ${{ inputs.generate }}
-        with:
-          install-lib: false
-      - name: Regenerate Parser
-        if: ${{ inputs.generate }}
-        run: tree-sitter generate --no-bindings
       - name: Set up NodeJS
         uses: actions/setup-node@v4
         with:
@@ -57,7 +50,10 @@ jobs:
         with:
           version: ${{inputs.emscripten-version}}
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci --omit peer --omit optional
+      - name: Regenerate parser
+        if: ${{inputs.generate}}
+        run: npm x -- tree-sitter generate
       - name: Build Wasm binaries
         shell: bash
         run: |-
@@ -83,20 +79,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - uses: tree-sitter/setup-action@v1
-        if: ${{ inputs.generate }}
-        with:
-          install-lib: false
-      - name: Regenerate Parser
-        if: ${{ inputs.generate }}
-        run: tree-sitter generate --no-bindings
       - name: Set up NodeJS
         uses: actions/setup-node@v4
         with:
           cache: npm
           node-version: ${{inputs.node-version}}
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: npm ci --omit peer --omit optional
+      - name: Regenerate parser
+        if: ${{inputs.generate}}
+        run: npm x -- tree-sitter generate
       - name: Build x64 binary
         run: npm x -- prebuildify --strip --arch x64
       - name: Build arm64 binary

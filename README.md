@@ -212,7 +212,7 @@ updates:
   #       patterns: ["*"]
 
   # - package-ecosystem: gomod
-  #   directory: /bindings/go
+  #   directory: /
   #   schedule:
   #     interval: weekly
   #     day: sunday

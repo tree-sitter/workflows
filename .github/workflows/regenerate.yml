@@ -54,7 +54,7 @@ jobs:
       - name: Regenerate parser
         run: |-
           npm ci --legacy-peer-deps
-          npm x -- tree-sitter generate --no-bindings
+          npm x -- tree-sitter generate
       - name: Update scanner
         if: inputs.update-scanner == true
         run: |-

@@ -34,17 +34,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - uses: tree-sitter/setup-action@v1
-        if: ${{ inputs.generate }}
-        with:
-          install-lib: false
-      - name: Regenerate Parser
-        if: ${{ inputs.generate }}
-        run: tree-sitter generate --no-bindings
       - name: Set up Rust
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: ${{inputs.rust-toolchain}}
+      - name: Set up tree-sitter CLI
+        if: ${{inputs.generate}}
+        uses: tree-sitter/setup-action/cli@v1
+      - name: Regenerate parser
+        if: ${{inputs.generate}}
+        run: tree-sitter generate
       - name: Publish to crates.io
         run: cargo publish
         env:
