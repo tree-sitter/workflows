@@ -2,6 +2,44 @@
 
 This repository contains reusable and reference workflows for parsers.
 
+## Release workflow
+
+This workflow creates a GitHub release and uploads the source code and Wasm binaries.
+
+```yaml
+name: Create release
+
+on:
+  push:
+    tags: ["*"]
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
+
+jobs:
+  npm:
+    uses: tree-sitter/workflows/.github/workflows/release.yml@main
+```
+
+### options
+
+```yaml
+inputs:
+  emscripten-version:
+    description: The Emscripten version
+    default: ${{vars.EMSCRIPTEN_VERSION || '3.1.64'}}
+    type: string
+  ubuntu-version:
+    description: The version of the Ubuntu runner image
+    default: ${{vars.UBUNTU_VERSION || '20.04'}}
+    type: string
+  generate:
+    description: Generate the parser artifacts
+    default: false
+    type: boolean
+```
+
 ## Packaging workflows
 
 These workflows can be used to publish parser packages to registries.<br>

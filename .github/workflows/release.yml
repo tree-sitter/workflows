@@ -1,0 +1,63 @@
+name: Publish GitHub release
+
+on:
+  workflow_call:
+    inputs:
+      emscripten-version:
+        description: The Emscripten version
+        default: ${{vars.EMSCRIPTEN_VERSION || '3.1.64'}}
+        type: string
+      ubuntu-version:
+        description: The version of the Ubuntu runner image
+        default: ${{vars.UBUNTU_VERSION || '20.04'}}
+        type: string
+      generate:
+        description: Generate the parser artifacts
+        default: false
+        type: boolean
+
+jobs:
+  release:
+    name: Build release artifacts
+    runs-on: ubuntu-${{inputs.ubuntu-version}}
+    env:
+      REPO_NAME: ${{github.event.repository.name}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: ${{inputs.emscripten-version}}
+      - name: Set up tree-sitter CLI
+        uses: tree-sitter/setup-action/cli@v1
+      - name: Install parser dependencies
+        run: |-
+          JQ_SCRIPT='.dependencies | del(."node-addon-api", ."node-gyp-build") | length > 0'
+          if jq -e "$JQ_SCRIPT" package.json >/dev/null; then
+            npm ci --omit dev --omit peer --omit optional
+          fi
+      - name: Generate parser
+        if: ${{inputs.generate}}
+        run: tree-sitter generate
+      - name: Build Wasm binaries
+        shell: bash
+        run: |-
+          while read -r grammar; do
+            tree-sitter build --wasm "${grammar%/grammar.js}"
+          done < <(find -name grammar.js -not -path './node_modules/*')
+      - name: Create source code tarball
+        run: >-
+          files=(
+            src/parser.c
+            src/grammar.json
+            src/node-types.json
+            src/tree_sitter/parser.h
+            src/tree_sitter/array.h
+            src/tree_sitter/alloc.h
+          )
+          git archive HEAD $(printf -- '--add-file %s ' "${files[@]}") -o "$REPO_NAME.tar.gz"
+      - name: Create GitHub release
+        run: gh release create "$GITHUB_REF_NAME" *.wasm "$REPO_NAME.tar.gz"
+        env:
+          GH_TOKEN: ${{github.token}}
