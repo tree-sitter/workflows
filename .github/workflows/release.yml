@@ -35,7 +35,7 @@ jobs:
         run: |-
           JQ_SCRIPT='.dependencies | del(."node-addon-api", ."node-gyp-build") | length > 0'
           if jq -e "$JQ_SCRIPT" package.json >/dev/null; then
-            npm ci --omit dev --omit peer --omit optional
+            npm i --omit dev --omit peer --omit optional
           fi
       - name: Generate parser
         if: ${{inputs.generate}}
@@ -48,15 +48,13 @@ jobs:
           done < <(find -name grammar.js -not -path './node_modules/*')
       - name: Create source code tarball
         run: >-
-          files=(
-            src/parser.c
-            src/grammar.json
-            src/node-types.json
-            src/tree_sitter/parser.h
-            src/tree_sitter/array.h
-            src/tree_sitter/alloc.h
-          )
-          git archive HEAD $(printf -- '--add-file %s ' "${files[@]}") -o "$REPO_NAME.tar.gz"
+          git archive HEAD -o "$REPO_NAME.tar.gz" \
+              --add-file src/parser.c \
+              --add-file src/grammar.json \
+              --add-file src/node-types.json \
+              --add-file src/tree_sitter/parser.h \
+              --add-file src/tree_sitter/array.h \
+              --add-file src/tree_sitter/alloc.h
       - name: Create GitHub release
         run: gh release create "$GITHUB_REF_NAME" *.wasm "$REPO_NAME.tar.gz"
         env:

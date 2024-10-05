@@ -409,8 +409,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Set up NodeJS
         uses: actions/setup-node@v4
-        with:
-          cache: npm
       - name: Update dependencies
         uses: tree-sitter/parser-update-action@v1.1
         with:

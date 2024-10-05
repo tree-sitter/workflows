@@ -49,11 +49,10 @@ jobs:
       - name: Set up NodeJS
         uses: actions/setup-node@v4
         with:
-          cache: npm
           node-version: ${{inputs.node-version}}
-      - name: Regenerate parser
+      - name: Install parser dependencies
         run: |-
-          npm ci --legacy-peer-deps
+          npm i --legacy-peer-deps
           npm x -- tree-sitter generate
       - name: Update scanner
         if: inputs.update-scanner == true

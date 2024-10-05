@@ -50,7 +50,7 @@ jobs:
         with:
           version: ${{inputs.emscripten-version}}
       - name: Install dependencies
-        run: npm ci --omit peer --omit optional
+        run: npm i --omit peer --omit optional
       - name: Regenerate parser
         if: ${{inputs.generate}}
         run: npm x -- tree-sitter generate
@@ -85,7 +85,7 @@ jobs:
           cache: npm
           node-version: ${{inputs.node-version}}
       - name: Install dependencies
-        run: npm ci --omit peer --omit optional
+        run: npm i --omit peer --omit optional
       - name: Regenerate parser
         if: ${{inputs.generate}}
         run: npm x -- tree-sitter generate
