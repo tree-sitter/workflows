@@ -48,13 +48,10 @@ jobs:
           done < <(find -name grammar.js -not -path './node_modules/*')
       - name: Create source code tarball
         run: >-
-          git archive HEAD -o "$REPO_NAME.tar.gz" \
-              --add-file src/parser.c \
-              --add-file src/grammar.json \
-              --add-file src/node-types.json \
-              --add-file src/tree_sitter/parser.h \
-              --add-file src/tree_sitter/array.h \
-              --add-file src/tree_sitter/alloc.h
+          git ls-files > "$RUNNER_TEMP/files"
+          printf '%s\n' >> "$RUNNER_TEMP/files" \
+              src/parser.c src/grammar.json src/node-types.json src/tree_sitter/*
+          tar cvzf "$REPO_NAME.tar.gz" -T <(sort -u "$RUNNER_TEMP/files")
       - name: Create GitHub release
         run: gh release create "$GITHUB_REF_NAME" *.wasm "$REPO_NAME.tar.gz"
         env:
