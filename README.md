@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  npm:
+  release:
     uses: tree-sitter/workflows/.github/workflows/release.yml@main
 ```
 
@@ -36,6 +36,10 @@ inputs:
     type: string
   generate:
     description: Generate the parser artifacts
+    default: false
+    type: boolean
+  attestations:
+    description: Generate attestations for artifacts
     default: false
     type: boolean
 ```

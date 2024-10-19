@@ -15,11 +15,18 @@ on:
         description: Generate the parser artifacts
         default: false
         type: boolean
+      attestations:
+        description: Generate attestations for artifacts
+        default: false
+        type: boolean
 
 jobs:
   release:
     name: Build release artifacts
     runs-on: ubuntu-${{inputs.ubuntu-version}}
+    permissions:
+      id-token: write
+      attestations: write
     env:
       REPO_NAME: ${{github.event.repository.name}}
     steps:
@@ -38,7 +45,7 @@ jobs:
             npm i --omit dev --omit peer --omit optional
           fi
       - name: Generate parser
-        if: ${{inputs.generate}}
+        if: inputs.generate
         run: tree-sitter generate
       - name: Build Wasm binaries
         shell: bash
@@ -52,6 +59,13 @@ jobs:
           printf '%s\n' >> "$RUNNER_TEMP/files" \
               src/parser.c src/grammar.json src/node-types.json src/tree_sitter/*
           tar cvzf "$REPO_NAME.tar.gz" -T <(sort -u "$RUNNER_TEMP/files")
+      - name: Generate attestations
+        uses: actions/attest-build-provenance@v1
+        if: inputs.attestations
+        with:
+          subject-path: |
+            *.wasm
+            ${{env.REPO_NAME}}.tar.gz
       - name: Create GitHub release
         run: gh release create "$GITHUB_REF_NAME" *.wasm "$REPO_NAME.tar.gz"
         env:
