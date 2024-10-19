@@ -86,6 +86,7 @@ jobs:
           output-dir: dist
         env:
           CIBW_ARCHS: ${{matrix.cibw_arch}}
+          CIBW_SKIP: "*-musllinux_aarch64"
           CIBW_TEST_SKIP: "*-*linux_aarch64 *-macosx_x86_64 *-win_arm64"
       - name: Upload wheel artifacts
         uses: actions/upload-artifact@v4
@@ -113,6 +114,6 @@ jobs:
       - name: Check build artifacts
         run: ls -l dist
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1.8
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{secrets.PYPI_API_TOKEN}}
