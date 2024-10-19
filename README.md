@@ -17,6 +17,11 @@ concurrency:
   group: ${{github.workflow}}-${{github.ref}}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
 jobs:
   release:
     uses: tree-sitter/workflows/.github/workflows/release.yml@main
@@ -29,10 +34,6 @@ inputs:
   emscripten-version:
     description: The Emscripten version
     default: ${{vars.EMSCRIPTEN_VERSION || '3.1.64'}}
-    type: string
-  ubuntu-version:
-    description: The version of the Ubuntu runner image
-    default: ${{vars.UBUNTU_VERSION || '20.04'}}
     type: string
   generate:
     description: Generate the parser artifacts
