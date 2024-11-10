@@ -53,7 +53,14 @@ jobs:
         run: npm i --omit peer --omit optional
       - name: Regenerate parser
         if: ${{inputs.generate}}
-        run: npm x -- tree-sitter generate
+        shell: bash
+        run: |
+          while read -r grammar; do
+            grammar_dir=$(dirname "$grammar")
+            cd "$grammar_dir"
+            npm x -- tree-sitter generate
+            cd - > /dev/null
+          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Build Wasm binaries
         shell: bash
         run: |-
@@ -88,7 +95,14 @@ jobs:
         run: npm i --omit peer --omit optional
       - name: Regenerate parser
         if: ${{inputs.generate}}
-        run: npm x -- tree-sitter generate
+        shell: bash
+        run: |
+          while read -r grammar; do
+            grammar_dir=$(dirname "$grammar")
+            cd "$grammar_dir"
+            npm x -- tree-sitter generate
+            cd - > /dev/null
+          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Build x64 binary
         run: npm x -- prebuildify --strip --arch x64 --target 20.9.0
       - name: Build arm64 binary

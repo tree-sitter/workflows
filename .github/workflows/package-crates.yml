@@ -43,7 +43,13 @@ jobs:
         uses: tree-sitter/setup-action/cli@v1
       - name: Regenerate parser
         if: ${{inputs.generate}}
-        run: tree-sitter generate
+        run: |
+          while read -r grammar; do
+            grammar_dir=$(dirname "$grammar")
+            cd "$grammar_dir"
+            tree-sitter generate
+            cd - > /dev/null
+          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Publish to crates.io
         run: cargo publish
         env:

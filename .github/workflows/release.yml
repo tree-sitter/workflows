@@ -44,13 +44,20 @@ jobs:
           fi
       - name: Generate parser
         if: inputs.generate
-        run: tree-sitter generate
+        shell: bash
+        run: |
+          while read -r grammar; do
+            grammar_dir=$(dirname "$grammar")
+            cd "$grammar_dir"
+            tree-sitter generate
+            cd - > /dev/null
+          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Build Wasm binaries
         shell: bash
         run: |-
           while read -r grammar; do
             tree-sitter build --wasm "${grammar%/grammar.js}"
-          done < <(find -name grammar.js -not -path './node_modules/*')
+          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Create source code tarball
         run: >-
           git ls-files > "$RUNNER_TEMP/files"

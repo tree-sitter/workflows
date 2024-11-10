@@ -42,7 +42,14 @@ jobs:
         uses: tree-sitter/setup-action/cli@v1
       - name: Regenerate parser
         if: ${{inputs.generate}}
-        run: tree-sitter generate
+        shell: bash
+        run: |
+          while read -r grammar; do
+            grammar_dir=$(dirname "$grammar")
+            cd "$grammar_dir"
+            tree-sitter generate
+            cd - > /dev/null
+          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Install dependencies
         run: pip install --upgrade pip build setuptools wheel
       - name: Build sources
@@ -79,7 +86,14 @@ jobs:
         uses: tree-sitter/setup-action/cli@v1
       - name: Regenerate parser
         if: ${{inputs.generate}}
-        run: tree-sitter generate
+        shell: bash
+        run: |
+          while read -r grammar; do
+            grammar_dir=$(dirname "$grammar")
+            cd "$grammar_dir"
+            tree-sitter generate
+            cd - > /dev/null
+          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21
         with:
