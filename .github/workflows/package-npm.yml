@@ -90,9 +90,9 @@ jobs:
         if: ${{inputs.generate}}
         run: npm x -- tree-sitter generate
       - name: Build x64 binary
-        run: npm x -- prebuildify --strip --arch x64 --target 20.9.0
+        run: npm x -- prebuildify --strip --arch x64 --target 16.20.2
       - name: Build arm64 binary
-        run: npm x -- prebuildify --strip --arch arm64 --target 20.9.0
+        run: npm x -- prebuildify --strip --arch arm64 --target 16.20.2
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
