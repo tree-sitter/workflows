@@ -25,6 +25,8 @@ permissions:
 jobs:
   release:
     uses: tree-sitter/workflows/.github/workflows/release.yml@main
+    with:
+      attestations: true
 ```
 
 ### options
@@ -44,6 +46,15 @@ inputs:
     default: false
     type: boolean
 ```
+
+<details>
+<summary>Verifying attestations</summary>
+
+```sh
+gh attestation verify $file --repo $repo --signer-workflow tree-sitter/workflows/.github/workflows/release.yml
+  ```
+
+</details>
 
 ## Packaging workflows
 
