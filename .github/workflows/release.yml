@@ -48,9 +48,9 @@ jobs:
         run: |
           while read -r grammar; do
             grammar_dir=$(dirname "$grammar")
-            cd "$grammar_dir"
+            pushd "$grammar_dir"
             tree-sitter generate
-            cd - > /dev/null
+            popd > /dev/null
           done < <(find -name grammar.js -not -path './node_modules/*')
       - name: Build Wasm binaries
         shell: bash
