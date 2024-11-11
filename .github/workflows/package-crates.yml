@@ -41,6 +41,8 @@ jobs:
       - name: Set up tree-sitter CLI
         if: ${{inputs.generate}}
         uses: tree-sitter/setup-action/cli@v1
+      - name: Install dependencies
+        run: npm i --ignore-scripts --omit dev --omit peer --omit optional
       - name: Regenerate parser
         if: ${{inputs.generate}}
         run: |
