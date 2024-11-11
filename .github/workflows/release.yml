@@ -40,7 +40,7 @@ jobs:
         run: |-
           JQ_SCRIPT='.dependencies | del(."node-addon-api", ."node-gyp-build") | length > 0'
           if jq -e "$JQ_SCRIPT" package.json >/dev/null; then
-            npm i --omit dev --omit peer --omit optional
+            npm i --ignore-scripts --omit dev --omit peer --omit optional
           fi
       - name: Generate parser
         if: inputs.generate
