@@ -59,10 +59,16 @@ jobs:
             tree-sitter build --wasm "${grammar%/grammar.js}"
           done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Create source code tarball
-        run: >-
+        run: |
           git ls-files > "$RUNNER_TEMP/files"
-          printf '%s\n' >> "$RUNNER_TEMP/files" \
-              src/parser.c src/grammar.json src/node-types.json src/tree_sitter/*
+          while read -r grammar; do
+            grammar_dir=$(dirname "$grammar" | sed 's|^\./||')
+            prefix=""
+            [ "$grammar_dir" != "." ] && prefix="$grammar_dir/"
+            printf "${prefix}src/%s\n" \
+              "parser.c" "grammar.json" "node-types.json" \
+              "tree_sitter/parser.h" "tree_sitter/array.h" "tree_sitter/alloc.h" >> "$RUNNER_TEMP/files"
+          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
           tar cvzf "$REPO_NAME.tar.xz" -T <(sort -u "$RUNNER_TEMP/files")
       - name: Generate attestations
         uses: actions/attest-build-provenance@v1
