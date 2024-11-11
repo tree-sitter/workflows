@@ -51,25 +51,23 @@ jobs:
             cd "$grammar_dir"
             tree-sitter generate
             cd - > /dev/null
-          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+          done < <(find -name grammar.js -not -path './node_modules/*')
       - name: Build Wasm binaries
         shell: bash
         run: |-
           while read -r grammar; do
             tree-sitter build --wasm "${grammar%/grammar.js}"
-          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+          done < <(find -name grammar.js -not -path './node_modules/*')
       - name: Create source code tarball
         run: |
           git ls-files > "$RUNNER_TEMP/files"
           while read -r grammar; do
-            grammar_dir=$(dirname "$grammar" | sed 's|^\./||')
-            prefix=""
-            [ "$grammar_dir" != "." ] && prefix="$grammar_dir/"
-            printf "${prefix}src/%s\n" \
-              "parser.c" "grammar.json" "node-types.json" \
-              "tree_sitter/parser.h" "tree_sitter/array.h" "tree_sitter/alloc.h" >> "$RUNNER_TEMP/files"
-          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
-          tar cvzf "$REPO_NAME.tar.xz" -T <(sort -u "$RUNNER_TEMP/files")
+            : "$(dirname "$grammar")"; src_dir="${_/.\//}/src"
+            printf '%s\n' >> "$RUNNER_TEMP/files" \
+              "$src_dir"/parser.c "$src_dir"/grammar.json \
+              "$src_dir"/node-types.json "$src_dir"/tree_sitter/*
+          done < <(find -name grammar.js -not -path './node_modules/*')
+          tar cvJf "$REPO_NAME.tar.xz" -T <(sort -u "$RUNNER_TEMP/files")
       - name: Generate attestations
         uses: actions/attest-build-provenance@v1
         if: inputs.attestations
