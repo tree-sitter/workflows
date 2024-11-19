@@ -55,7 +55,7 @@ jobs:
             cd "$grammar_dir"
             tree-sitter generate
             cd - > /dev/null
-          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+          done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Publish to crates.io
         run: cargo publish
         env:

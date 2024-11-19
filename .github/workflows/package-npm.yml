@@ -60,13 +60,13 @@ jobs:
             cd "$grammar_dir"
             npm x -- tree-sitter generate
             cd - > /dev/null
-          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+          done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Build Wasm binaries
         shell: bash
         run: |-
           while read -r grammar; do
             npm x -- tree-sitter build --wasm "${grammar%/grammar.js}"
-          done < <(find -name grammar.js -not -path './node_modules/*')
+          done < <(find . -name grammar.js -not -path './node_modules/*')
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
@@ -102,7 +102,7 @@ jobs:
             cd "$grammar_dir"
             npm x -- tree-sitter generate
             cd - > /dev/null
-          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+          done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Build x64 binary
         run: npm x -- prebuildify --strip --arch x64 --target 20.9.0
       - name: Build arm64 binary
