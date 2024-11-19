@@ -58,7 +58,7 @@ jobs:
             cd "$grammar_dir"
             npm x -- tree-sitter generate
             cd - > /dev/null
-          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+          done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Update scanner
         if: inputs.update-scanner == true
         run: |-

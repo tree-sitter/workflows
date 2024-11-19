@@ -55,7 +55,7 @@ jobs:
             cd "$grammar_dir"
             tree-sitter generate
             cd - > /dev/null
-          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+          done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Install dependencies
         run: pip install --upgrade pip build setuptools wheel
       - name: Build sources
@@ -101,7 +101,7 @@ jobs:
             cd "$grammar_dir"
             tree-sitter generate
             cd - > /dev/null
-          done < <(find -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+          done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21
         with:
