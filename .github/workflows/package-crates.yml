@@ -40,7 +40,7 @@ jobs:
           toolchain: ${{inputs.rust-toolchain}}
       - name: Set up tree-sitter CLI
         if: ${{inputs.generate}}
-        uses: tree-sitter/setup-action/cli@v1
+        uses: tree-sitter/setup-action/cli@v2
       - name: Install dependencies
         run: |-
           JQ_SCRIPT='.dependencies | del(."node-addon-api", ."node-gyp-build") | length > 0'
