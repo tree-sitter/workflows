@@ -104,9 +104,13 @@ jobs:
             cd - > /dev/null
           done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Build x64 binary
-        run: npm x -- prebuildify --arch x64 --target 20.9.0
+        run: npm x -- prebuildify --arch x64 -t 20.9.0 --strip
       - name: Build arm64 binary
-        run: npm x -- prebuildify --arch arm64 --target 20.9.0
+        if: runner.os != 'Linux'
+        run: npm x -- prebuildify --arch arm64 -t 20.9.0 --strip
+      - name: Build arm64 binary
+        if: runner.os == 'Linux'
+        run: npm x -- prebuildify-cross -i linux-arm64 -t 20.9.0 --strip
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
