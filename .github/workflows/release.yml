@@ -35,7 +35,7 @@ jobs:
         with:
           version: ${{inputs.emscripten-version}}
       - name: Set up tree-sitter CLI
-        uses: tree-sitter/setup-action/cli@v1
+        uses: tree-sitter/setup-action/cli@v2
       - name: Install parser dependencies
         run: |-
           JQ_SCRIPT='.dependencies | del(."node-addon-api", ."node-gyp-build") | length > 0'
@@ -69,7 +69,7 @@ jobs:
           done < <(find . -name grammar.js -not -path './node_modules/*')
           tar cvJf "$REPO_NAME.tar.xz" -T <(sort -u "$RUNNER_TEMP/files")
       - name: Generate attestations
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@v2
         if: inputs.attestations
         with:
           subject-path: |
