@@ -67,17 +67,17 @@ jobs:
               "$src_dir"/parser.c "$src_dir"/grammar.json \
               "$src_dir"/node-types.json "$src_dir"/tree_sitter/*
           done < <(find . -name grammar.js -not -path './node_modules/*')
-          tar cvJf "$REPO_NAME.tar.xz" -T <(sort -u "$RUNNER_TEMP/files")
+          tar cvzf "$REPO_NAME.tar.gz" -T <(sort -u "$RUNNER_TEMP/files")
       - name: Generate attestations
         uses: actions/attest-build-provenance@v2
         if: inputs.attestations
         with:
           subject-path: |
             *.wasm
-            ${{env.REPO_NAME}}.tar.xz
+            ${{env.REPO_NAME}}.tar.gz
       - name: Create GitHub release
         run: |-
-          gh release create "$GITHUB_REF_NAME" *.wasm "$REPO_NAME.tar.xz" \
-            -n "**NOTE:** Download \`$REPO_NAME.tar.xz\` for the *complete* source code."
+          gh release create "$GITHUB_REF_NAME" *.wasm "$REPO_NAME.tar.gz" \
+            -n "**NOTE:** Download \`$REPO_NAME.tar.gz\` for the *complete* source code."
         env:
           GH_TOKEN: ${{github.token}}
