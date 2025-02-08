@@ -109,7 +109,7 @@ inputs:
     type: string
   ubuntu-version:
     description: The version of the Ubuntu runner image
-    default: ${{vars.UBUNTU_VERSION || '20.04'}}
+    default: ${{vars.UBUNTU_VERSION || '22.04'}}
     type: string
   generate:
     description: Generate the parser artifacts
