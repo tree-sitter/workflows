@@ -15,6 +15,10 @@ on:
         description: Generate attestations for artifacts
         default: false
         type: boolean
+      abi-version:
+        description: The tree-sitter ABI version
+        default: "15"
+        type: string
 
 permissions:
   contents: write
@@ -52,6 +56,8 @@ jobs:
             tree-sitter generate
             popd > /dev/null
           done < <(find . -name grammar.js -not -path './node_modules/*')
+        env:
+          TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Build Wasm binaries
         shell: bash
         run: |-

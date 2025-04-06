@@ -27,6 +27,10 @@ on:
         description: Generate the parser artifacts
         default: false
         type: boolean
+      abi-version:
+        description: The tree-sitter ABI version
+        default: "15"
+        type: string
     secrets:
       NODE_AUTH_TOKEN:
         description: An authentication token for npm
@@ -61,6 +65,8 @@ jobs:
             npm x -- tree-sitter generate
             cd - > /dev/null
           done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+        env:
+          TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Build Wasm binaries
         shell: bash
         run: |-
