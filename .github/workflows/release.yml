@@ -15,6 +15,9 @@ on:
         description: Generate attestations for artifacts
         default: false
         type: boolean
+      release-body:
+        description: The body of the release notes
+        type: string
       abi-version:
         description: The tree-sitter ABI version
         default: "15"
@@ -90,7 +93,9 @@ jobs:
             ${{env.REPO_NAME}}.tar.gz
       - name: Create GitHub release
         run: |-
-          gh release create "$GITHUB_REF_NAME" *.wasm "$REPO_NAME.tar.gz" \
-            -n "**NOTE:** Download \`$REPO_NAME.tar.gz\` for the *complete* source code."
+          RELEASE_NOTE="**NOTE:** Download \`$REPO_NAME.tar.gz\` for the *complete* source code."
+          RELEASE_NOTE="${RELEASE_BODY}${RELEASE_BODY+$'\n\n---\n\n'}${RELEASE_NOTE}"
+          gh release create "$GITHUB_REF_NAME" *.wasm "$REPO_NAME.tar.gz" -n "$RELEASE_NOTE"
         env:
           GH_TOKEN: ${{github.token}}
+          RELEASE_BODY: ${{inputs.release-body}}
