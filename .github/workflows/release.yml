@@ -15,6 +15,9 @@ on:
         description: Generate attestations for artifacts
         default: false
         type: boolean
+      release-body:
+        description: The release body
+        type: string
 
 permissions:
   contents: write
@@ -77,7 +80,17 @@ jobs:
             ${{env.REPO_NAME}}.tar.gz
       - name: Create GitHub release
         run: |-
+          # Start with the basic note
+          RELEASE_NOTE="**NOTE:** Download \`$REPO_NAME.tar.gz\` for the *complete* source code."
+
+          # Append release body if provided
+          if [ -n "$RELEASE_BODY" ]; then
+            # Add two newlines to separate the note from the changelog
+            RELEASE_NOTE="$RELEASE_NOTE\n\n$RELEASE_BODY"
+          fi
+
           gh release create "$GITHUB_REF_NAME" *.wasm "$REPO_NAME.tar.gz" \
-            -n "**NOTE:** Download \`$REPO_NAME.tar.gz\` for the *complete* source code."
+            -n "$RELEASE_NOTE"
         env:
           GH_TOKEN: ${{github.token}}
+          RELEASE_BODY: ${{ inputs.release-body }}
