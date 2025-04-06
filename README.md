@@ -45,6 +45,9 @@ inputs:
     description: Generate attestations for artifacts
     default: false
     type: boolean
+  release-body:
+    description: The body of the release notes
+    type: string
   abi-version:
     description: The tree-sitter ABI version
     default: "15"
