@@ -86,7 +86,12 @@ jobs:
           # Append release body if provided
           if [ -n "$RELEASE_BODY" ]; then
             # Add two newlines to separate the note from the changelog
-            RELEASE_NOTE="$RELEASE_NOTE\n\n$RELEASE_BODY"
+            RELEASE_NOTE=$(cat <<EOF
+            $RELEASE_NOTE
+
+            $RELEASE_BODY
+            EOF
+            )
           fi
 
           gh release create "$GITHUB_REF_NAME" *.wasm "$REPO_NAME.tar.gz" \
