@@ -108,6 +108,8 @@ jobs:
             tree-sitter generate
             cd - > /dev/null
           done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+        env:
+          TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.23
         with:
