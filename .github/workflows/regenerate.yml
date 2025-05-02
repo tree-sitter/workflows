@@ -3,6 +3,10 @@ name: Regenerate parser
 on:
   workflow_call:
     inputs:
+      abi-version:
+        description: The tree-sitter ABI version
+        default: "15"
+        type: string
       node-version:
         description: The NodeJS version
         default: ${{vars.NODE_VERSION || 'latest'}}
@@ -16,11 +20,11 @@ on:
         default: "build: regenerate parser [dependabot skip]"
         type: string
       commit-author-name:
-        description: The commit author's username
+        description: "The commit author's username"
         default: dependabot[bot]
         type: string
       commit-author-email:
-        description: The commit author's email
+        description: "The commit author's email"
         default: 49699333+dependabot[bot]@users.noreply.github.com
         type: string
 
@@ -59,6 +63,8 @@ jobs:
             npm x -- tree-sitter generate
             cd - > /dev/null
           done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+        env:
+          TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Update scanner
         if: inputs.update-scanner == true
         run: |-
