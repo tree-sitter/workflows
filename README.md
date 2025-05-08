@@ -45,6 +45,10 @@ inputs:
     description: Generate attestations for artifacts
     default: false
     type: boolean
+  abi-version:
+    description: The tree-sitter ABI version
+    default: "15"
+    type: string
 ```
 
 <details>
@@ -115,6 +119,10 @@ inputs:
     description: Generate the parser artifacts
     default: false
     type: boolean
+  abi-version:
+    description: The tree-sitter ABI version
+    default: "15"
+    type: string
 secrets:
   NODE_AUTH_TOKEN:
     description: An authentication token for npm
@@ -141,6 +149,10 @@ inputs:
     description: Generate the parser artifacts
     default: false
     type: boolean
+  abi-version:
+    description: The tree-sitter ABI version
+    default: "15"
+    type: string
 secrets:
   CARGO_REGISTRY_TOKEN:
     description: An authentication token for crates.io
@@ -167,6 +179,10 @@ inputs:
     description: Generate the parser artifacts
     default: false
     type: boolean
+  abi-version:
+    description: The tree-sitter ABI version
+    default: "15"
+    type: string
 secrets:
   PYPI_API_TOKEN:
     description: An authentication token for pypi
@@ -287,6 +303,10 @@ updates:
 
 ```yaml
 inputs:
+  abi-version:
+    description: The tree-sitter ABI version
+    default: "15"
+    type: string
   node-version:
     description: The NodeJS version
     default: ${{vars.NODE_VERSION || 'latest'}}
