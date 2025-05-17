@@ -9,7 +9,7 @@ on:
         type: string
       node-version:
         description: The NodeJS version
-        default: ${{vars.NODE_VERSION || 'latest'}}
+        default: ${{vars.NODE_VERSION || 'lts/*'}}
         type: string
       update-scanner:
         description: Update the scanner

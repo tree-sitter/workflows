@@ -105,7 +105,7 @@ inputs:
     type: string
   node-version:
     description: The NodeJS version
-    default: ${{vars.NODE_VERSION || '20'}}
+    default: ${{vars.NODE_VERSION || '22'}}
     type: string
   emscripten-version:
     description: The Emscripten version
@@ -313,7 +313,7 @@ inputs:
     type: string
   node-version:
     description: The NodeJS version
-    default: ${{vars.NODE_VERSION || 'latest'}}
+    default: ${{vars.NODE_VERSION || 'lts/*'}}
     type: string
   update-scanner:
     description: Update the scanner
