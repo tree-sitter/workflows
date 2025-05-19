@@ -36,6 +36,10 @@ on:
         description: An authentication token for npm
         required: true
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build_wasm:
     name: Build Wasm binaries
@@ -57,7 +61,6 @@ jobs:
         run: npm i --omit peer --omit optional
       - name: Regenerate parser
         if: ${{inputs.generate}}
-        shell: bash
         run: |
           while read -r grammar; do
             grammar_dir=$(dirname "$grammar")
@@ -68,7 +71,6 @@ jobs:
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Build Wasm binaries
-        shell: bash
         run: |-
           while read -r grammar; do
             npm x -- tree-sitter build --wasm "${grammar%/grammar.js}"
@@ -101,7 +103,6 @@ jobs:
         run: npm i --omit peer --omit optional
       - name: Regenerate parser
         if: ${{inputs.generate}}
-        shell: bash
         run: |
           while read -r grammar; do
             grammar_dir=$(dirname "$grammar")
