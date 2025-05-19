@@ -36,6 +36,10 @@ on:
         description: An authentication token for npm
         required: true
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build_wasm:
     name: Build Wasm binaries
