@@ -357,14 +357,14 @@ on:
       - src/**
       - test/**
       - bindings/**
-      - binding.gyp
+      - tree-sitter.json
   pull_request:
     paths:
       - grammar.js
       - src/**
       - test/**
       - bindings/**
-      - binding.gyp
+      - tree-sitter.json
 
 concurrency:
   group: ${{github.workflow}}-${{github.ref}}
