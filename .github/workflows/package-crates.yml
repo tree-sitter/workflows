@@ -47,10 +47,17 @@ jobs:
         uses: tree-sitter/setup-action/cli@v2
       - name: Install dependencies
         run: |-
-          JQ_SCRIPT='.dependencies | del(."node-addon-api", ."node-gyp-build") | length > 0'
           if jq -e "$JQ_SCRIPT" package.json >/dev/null; then
-            npm i --ignore-scripts --omit dev --omit peer --omit optional
+            npm i --ignore-scripts --omit peer --omit optional
           fi
+        env:
+          JQ_SCRIPT: >-
+            .dependencies + .devDependencies |
+            with_entries(select(
+            (.key | startswith("tree-sitter-"))
+            and (.key != "tree-sitter-cli")
+            )) |
+            length > 0
       - name: Regenerate parser
         if: ${{inputs.generate}}
         run: |
