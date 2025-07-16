@@ -81,25 +81,20 @@ jobs:
           retention-days: 2
 
   build_wheels:
-    name: Build wheels on ${{matrix.os}} (${{matrix.cibw_arch}})
+    name: Build wheels on ${{matrix.os}}
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        include:
-          - { os: windows-latest, cibw_arch: AMD64 }
-          - { os: windows-latest, cibw_arch: ARM64 }
-          - { os: ubuntu-latest, cibw_arch: x86_64 }
-          - { os: ubuntu-latest, cibw_arch: aarch64, qemu_arch: arm64 }
-          - { os: macos-latest, cibw_arch: arm64 }
-          - { os: macos-latest, cibw_arch: x86_64 }
+        os:
+          - windows-2022
+          - windows-11-arm64
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+          - macos-15
+          - macos-13
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Set up QEMU
-        if: matrix.qemu_arch != ''
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: ${{matrix.qemu_arch}}
       - name: Set up tree-sitter CLI
         if: ${{inputs.generate}}
         uses: tree-sitter/setup-action/cli@v2
@@ -130,13 +125,12 @@ jobs:
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.23
+        uses: pypa/cibuildwheel@v3.0
         with:
           output-dir: dist
         env:
-          CIBW_ARCHS: ${{matrix.cibw_arch}}
+          CIBW_ARCHS: native
           CIBW_SKIP: "*-musllinux_aarch64"
-          CIBW_TEST_SKIP: "*-*linux_aarch64 *-macosx_x86_64 *-win_arm64"
       - name: Upload wheel artifacts
         uses: actions/upload-artifact@v4
         with:
