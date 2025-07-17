@@ -94,7 +94,7 @@ jobs:
       - name: Create GitHub release
         run: |-
           RELEASE_NOTE="**NOTE:** Download \`$REPO_NAME.tar.gz\` for the *complete* source code."
-          RELEASE_NOTE="${RELEASE_BODY}${RELEASE_BODY+$'\n\n---\n\n'}${RELEASE_NOTE}"
+          RELEASE_NOTE="${RELEASE_BODY}${RELEASE_BODY:+$'\n\n---\n\n'}${RELEASE_NOTE}"
           gh release create "$GITHUB_REF_NAME" *.wasm "$REPO_NAME.tar.gz" -n "$RELEASE_NOTE"
         env:
           GH_TOKEN: ${{github.token}}
