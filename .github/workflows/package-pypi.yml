@@ -104,6 +104,7 @@ jobs:
         if: ${{inputs.generate}}
         uses: tree-sitter/setup-action/cli@v2
       - name: Install dependencies
+        shell: bash
         run: |-
           if jq -e "$JQ_SCRIPT" package.json >/dev/null; then
             npm i --ignore-scripts --omit peer --omit optional

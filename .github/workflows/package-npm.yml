@@ -103,6 +103,7 @@ jobs:
         run: npm i --omit peer --omit optional
       - name: Regenerate parser
         if: ${{inputs.generate}}
+        shell: bash
         run: |
           while read -r grammar; do
             grammar_dir=$(dirname "$grammar")
