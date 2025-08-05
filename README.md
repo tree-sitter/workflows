@@ -114,10 +114,6 @@ inputs:
     description: The Emscripten version
     default: ${{vars.EMSCRIPTEN_VERSION || '3.1.64'}}
     type: string
-  ubuntu-version:
-    description: The version of the Ubuntu runner image
-    default: ${{vars.UBUNTU_VERSION || '22.04'}}
-    type: string
   generate:
     description: Generate the parser artifacts
     default: false
