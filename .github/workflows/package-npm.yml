@@ -75,7 +75,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: "*.wasm"
-          name: prebuilds-Wasm
+          name: prebuilds-wasm
           retention-days: 2
 
   build_node:
@@ -84,9 +84,12 @@ jobs:
     strategy:
       matrix:
         os:
+          - windows-2022
+          - windows-11-arm
           - ubuntu-24.04
-          - windows-latest
-          - macos-latest
+          - ubuntu-24.04-arm
+          - macos-15
+          - macos-13
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -107,22 +110,13 @@ jobs:
             npm x -- tree-sitter generate
             cd - > /dev/null
           done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
-      - name: Build x64 binary
-        run: npm x -- prebuildify --arch x64 -t 20.9.0
-      - name: Set up cross-compilation
-        if: runner.os == 'Linux'
-        run: |-
-          sudo apt-get update
-          sudo apt-get install g++-aarch64-linux-gnu
-          printf '%s\n' >> "$GITHUB_ENV" \
-            'CC=aarch64-linux-gnu-gcc' 'CXX=aarch64-linux-gnu-g++'
-      - name: Build arm64 binary
-        run: npm x -- prebuildify --arch arm64 -t 20.9.0
+      - name: Build binary
+        run: npm x -- prebuildify -t 20.9.0
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
           path: prebuilds/**
-          name: prebuilds-${{runner.os}}
+          name: prebuilds-${{matrix.os}}
           retention-days: 2
 
   package:
