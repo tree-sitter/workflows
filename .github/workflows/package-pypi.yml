@@ -129,7 +129,7 @@ jobs:
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.0
+        uses: pypa/cibuildwheel@v3.1
         with:
           output-dir: dist
         env:
@@ -154,7 +154,7 @@ jobs:
     #   id-token: write
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: dist
           pattern: dist-*
