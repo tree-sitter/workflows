@@ -36,7 +36,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -98,7 +98,7 @@ jobs:
             arch: ARM64
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up tree-sitter CLI
         if: ${{inputs.generate}}
         uses: tree-sitter/setup-action/cli@v2
