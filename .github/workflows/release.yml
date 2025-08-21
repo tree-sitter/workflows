@@ -78,7 +78,7 @@ jobs:
         run: |
           git ls-files > "$RUNNER_TEMP/files"
           while read -r grammar; do
-            : "$(dirname "$grammar")"; src_dir="${_/.\//}/src"
+            : "$(dirname "$grammar")"; : "${_/\./}"; src_dir="$_${_:+/}src"
             printf '%s\n' >> "$RUNNER_TEMP/files" \
               "$src_dir"/parser.c "$src_dir"/grammar.json \
               "$src_dir"/node-types.json "$src_dir"/tree_sitter/*
