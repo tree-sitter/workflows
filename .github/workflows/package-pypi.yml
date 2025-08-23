@@ -81,21 +81,17 @@ jobs:
           retention-days: 2
 
   build_wheels:
-    name: Build wheels on ${{matrix.os}} (${{matrix.arch}})
+    name: Build wheels on ${{matrix.os}}
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
         os:
           - windows-2022
-          # windows-11-arm64
+          - windows-11-arm
           - ubuntu-24.04
           - ubuntu-24.04-arm
           - macos-15
           - macos-13
-        arch: [native]
-        include:
-          - os: windows-2022
-            arch: ARM64
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -114,8 +110,7 @@ jobs:
             with_entries(select(
             (.key | startswith("tree-sitter-"))
             and (.key != "tree-sitter-cli")
-            )) |
-            length > 0
+            )) | length > 0
       - name: Regenerate parser
         if: ${{inputs.generate}}
         shell: bash
@@ -133,14 +128,12 @@ jobs:
         with:
           output-dir: dist
         env:
-          CIBW_ARCHS: ${{matrix.arch}}
-          CIBW_SKIP: "*-musllinux_aarch64"
-          CIBW_TEST_SKIP: "*-win_arm64"
+          CIBW_ARCHS: native
       - name: Upload wheel artifacts
         uses: actions/upload-artifact@v4
         with:
           path: dist/*.whl
-          name: dist-wheels-${{matrix.os}}-${{matrix.arch}}
+          name: dist-wheels-${{matrix.os}}
           retention-days: 2
 
   package:
