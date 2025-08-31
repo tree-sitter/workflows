@@ -85,7 +85,7 @@ jobs:
           done < <(find . -name grammar.js -not -path './node_modules/*')
           tar cvzf "$REPO_NAME.tar.gz" -T <(sort -u "$RUNNER_TEMP/files")
       - name: Generate attestations
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v3
         if: inputs.attestations
         with:
           subject-path: |
