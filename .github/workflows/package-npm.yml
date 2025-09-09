@@ -111,7 +111,7 @@ jobs:
             cd - > /dev/null
           done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
       - name: Build binary
-        run: npm x -- prebuildify -t 20.9.0
+        run: npm x -- prebuildify -t 20.19.5
       - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
