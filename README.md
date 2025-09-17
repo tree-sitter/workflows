@@ -122,6 +122,10 @@ inputs:
     description: The tree-sitter ABI version
     default: "15"
     type: string
+  attestations:
+    description: Generate attestations for the package
+    default: false
+    type: boolean
 secrets:
   NODE_AUTH_TOKEN:
     description: An authentication token for npm
