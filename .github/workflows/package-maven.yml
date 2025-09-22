@@ -1,0 +1,125 @@
+name: Publish package (maven)
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        description: The name of the package
+        default: "" # jtreesitter-${language_name}
+        type: string
+      package-namespace:
+        description: The namespace of the package
+        default: "" # io.github.${repo_owner}
+        type: string
+      environment-name:
+        description: The name of the environment
+        default: maven
+        type: string
+      java-version:
+        description: The Java version
+        default: ${{vars.JAVA_VERSION || '25'}}
+        type: string
+      java-distribution:
+        description: The Java distribution
+        default: temurin
+        type: string
+      generate:
+        description: Generate the parser artifacts
+        default: false
+        type: boolean
+      abi-version:
+        description: The tree-sitter ABI version
+        default: 15
+        type: number
+    secrets:
+      MAVEN_CENTRAL_USERNAME:
+        description: A username for Maven Central
+        required: true
+      MAVEN_CENTRAL_TOKEN:
+        description: An authorization token for Maven Central
+        required: true
+      GPG_PRIVATE_KEY:
+        description: A GPG private key
+        required: true
+      GPG_PASSPHRASE:
+        description: The passphrase of the GPG key
+        required: true
+
+jobs:
+  prepare:
+    name: Prepare variables
+    runs-on: ubuntu-latest
+    outputs:
+      url: ${{steps.prepare-url.outputs.url}}
+    steps:
+      - name: Prepare environment URL
+        id: prepare-url
+        shell: bash
+        run: |-
+          if [[ -n $NAMESPACE ]]; then
+            NAMESPACE="io.github.${GITHUB_REPOSITORY_OWNER}"
+          fi
+          if [[ -n $NAME ]]; then
+            : '${{github.event.repository.name}}'
+            NAME="${_/tree-sitter-/jtreesitter-}"
+          fi
+          printf 'url=%s/%s/%s\n' "$BASE" "$NAMESPACE" "$NAME" >> $GITHUB_OUTPUT
+        env:
+          BASE: https://central.sonatype.com/artifact
+          NAMESPACE: ${{inputs.package-namespace}}
+          NAME: ${{inputs.package-name}}
+
+  package:
+    name: Publish Maven package
+    needs: [prepare]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{inputs.environment-name}}
+      url: ${{needs.prepare.outputs.url}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: ${{inputs.java-distribution}}
+          java-version: ${{inputs.java-version}}
+          cache: maven
+          server-id: central
+          server-username: MAVEN_CENTRAL_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
+          gpg-private-key: ${{secrets.GPG_PRIVATE_KEY}}
+      - name: Set up tree-sitter CLI
+        if: ${{inputs.generate}}
+        uses: tree-sitter/setup-action/cli@v2
+      - name: Install dependencies
+        if: ${{inputs.generate}}
+        shell: bash
+        run: |-
+          if jq -e "$JQ_SCRIPT" package.json >/dev/null; then
+            npm i --ignore-scripts --omit peer --omit optional
+          fi
+        env:
+          JQ_SCRIPT: >-
+            .dependencies + .devDependencies |
+            with_entries(select(
+            (.key | startswith("tree-sitter-"))
+            and (.key != "tree-sitter-cli")
+            )) | length > 0
+      - name: Regenerate parser
+        if: ${{inputs.generate}}
+        shell: bash
+        run: |
+          while read -r grammar; do
+            pushd "$grammar_dir"
+            tree-sitter generate
+            popd > /dev/null
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+        env:
+          TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
+      - name: Publish to Maven Central
+        run: mvn --no-transfer-progress deploy -DskipTests=true
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{secrets.MAVEN_CENTRAL_USERNAME}}
+          MAVEN_CENTRAL_TOKEN: ${{secrets.MAVEN_CENTRAL_TOKEN}}
+          MAVEN_GPG_PASSPHRASE: ${{secrets.GPG_PASSPHRASE}}
