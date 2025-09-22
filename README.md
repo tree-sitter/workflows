@@ -82,6 +82,13 @@ jobs:
     uses: tree-sitter/workflows/.github/workflows/package-pypi.yml@main
     secrets:
       PYPI_API_TOKEN: ${{secrets.PYPI_TOKEN}}
+  maven:
+    uses: tree-sitter/workflows/.github/workflows/package-maven.yml@main
+    secrets:
+      MAVEN_CENTRAL_USERNAME: ${{secrets.MAVEN_USERNAME}}
+      MAVEN_CENTRAL_TOKEN: ${{secrets.MAVEN_TOKEN}}
+      GPG_PRIVATE_KEY: ${{secrets.GPG_PRIVATE_KEY}}
+      GPG_PASSPHRASE: ${{secrets.GPG_PASSPHRASE}}
 ```
 
 ### npm options
@@ -171,6 +178,53 @@ inputs:
 secrets:
   PYPI_API_TOKEN:
     description: An authentication token for pypi
+    required: true
+```
+
+### maven options
+
+```yaml
+inputs:
+  package-name:
+    description: The name of the package
+    default: "" # jtreesitter-${language_name}
+    type: string
+  package-namespace:
+    description: The namespace of the package
+    default: "" # io.github.${repo_owner}
+    type: string
+  environment-name:
+    description: The name of the environment
+    default: maven
+    type: string
+  java-version:
+    description: The Java version
+    default: ${{vars.JAVA_VERSION || '25'}}
+    type: string
+  java-distribution:
+    description: The Java distribution
+    default: temurin
+    type: string
+  generate:
+    description: Generate the parser artifacts
+    default: false
+    type: boolean
+  abi-version:
+    description: The tree-sitter ABI version
+    default: 15
+    type: number
+secrets:
+  MAVEN_CENTRAL_USERNAME:
+    description: A username for Maven Central
+    required: true
+  MAVEN_CENTRAL_TOKEN:
+    description: An authorization token for Maven Central
+    required: true
+  GPG_PRIVATE_KEY:
+    description: A GPG private key
+    required: true
+  GPG_PASSPHRASE:
+    description: The passphrase of the GPG key
     required: true
 ```
 
@@ -281,6 +335,19 @@ updates:
   #     - dependencies
   #   groups:
   #     go:
+  #       patterns: ["*"]
+
+  # - package-ecosystem: maven
+  #   directory: /
+  #   schedule:
+  #     interval: weekly
+  #     day: sunday
+  #   commit-message:
+  #     prefix: build(deps)
+  #   labels:
+  #     - dependencies
+  #   groups:
+  #     java:
   #       patterns: ["*"]
 ```
 
