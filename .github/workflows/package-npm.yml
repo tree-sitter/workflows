@@ -150,8 +150,18 @@ jobs:
       - name: Move Wasm binaries to root
         continue-on-error: true
         run: mv -v prebuilds/*.wasm .
-      - name: Publish to npm
-        run: npm publish
+      - name: Publish to npm (trusted with fallback)
+        shell: bash
+        run: |
+          set +e
+          OUT=$(npm publish --provenance 2>&1)
+          STATUS=$?
+          echo "$OUT"
+          if [ $STATUS -ne 0 ] && echo "$OUT" | grep -qi "requires you to be logged in"; then
+            npm publish
+          elif [ $STATUS -ne 0 ]; then
+            exit $STATUS
+          fi
         env:
           NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
           NPM_CONFIG_PROVENANCE: ${{inputs.attestations}}
