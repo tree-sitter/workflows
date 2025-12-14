@@ -25,8 +25,6 @@ permissions:
 jobs:
   release:
     uses: tree-sitter/workflows/.github/workflows/release.yml@main
-    with:
-      attestations: true
 ```
 
 ### options
@@ -35,10 +33,6 @@ jobs:
 inputs:
   generate:
     description: Generate the parser artifacts
-    default: false
-    type: boolean
-  attestations:
-    description: Generate attestations for artifacts
     default: false
     type: boolean
   release-body:
@@ -114,10 +108,6 @@ inputs:
     description: The tree-sitter ABI version
     default: "15"
     type: string
-  attestations:
-    description: Generate attestations for the package
-    default: false
-    type: boolean
 secrets:
   NODE_AUTH_TOKEN:
     description: An authentication token for npm

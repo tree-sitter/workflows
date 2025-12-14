@@ -7,10 +7,6 @@ on:
         description: Generate the parser artifacts
         default: false
         type: boolean
-      attestations:
-        description: Generate attestations for artifacts
-        default: false
-        type: boolean
       release-body:
         description: The body of the release notes
         type: string
@@ -82,7 +78,6 @@ jobs:
             end
       - name: Generate attestations
         uses: actions/attest-build-provenance@v3
-        if: inputs.attestations
         with:
           subject-path: |
             *.wasm
