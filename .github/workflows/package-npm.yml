@@ -15,10 +15,6 @@ on:
         description: The NodeJS version
         default: ${{vars.NODE_VERSION || '22'}}
         type: string
-      emscripten-version:
-        description: The Emscripten version
-        default: ${{vars.EMSCRIPTEN_VERSION || '3.1.64'}}
-        type: string
       generate:
         description: Generate the parser artifacts
         default: false
@@ -53,10 +49,6 @@ jobs:
         with:
           cache: npm
           node-version: ${{inputs.node-version}}
-      - name: Set up Emscripten
-        uses: mymindstorm/setup-emsdk@v14
-        with:
-          version: ${{inputs.emscripten-version}}
       - name: Install dependencies
         run: npm i --omit peer --omit optional
       - name: Regenerate parser

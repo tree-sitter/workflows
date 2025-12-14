@@ -33,10 +33,6 @@ jobs:
 
 ```yaml
 inputs:
-  emscripten-version:
-    description: The Emscripten version
-    default: ${{vars.EMSCRIPTEN_VERSION || '3.1.64'}}
-    type: string
   generate:
     description: Generate the parser artifacts
     default: false
@@ -109,10 +105,6 @@ inputs:
   node-version:
     description: The NodeJS version
     default: ${{vars.NODE_VERSION || '22'}}
-    type: string
-  emscripten-version:
-    description: The Emscripten version
-    default: ${{vars.EMSCRIPTEN_VERSION || '3.1.64'}}
     type: string
   generate:
     description: Generate the parser artifacts
