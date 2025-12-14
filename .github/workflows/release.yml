@@ -12,8 +12,8 @@ on:
         type: string
       abi-version:
         description: The tree-sitter ABI version
-        default: "15"
-        type: string
+        default: 15
+        type: number
 
 permissions:
   contents: write

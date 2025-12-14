@@ -21,8 +21,8 @@ on:
         type: boolean
       abi-version:
         description: The tree-sitter ABI version
-        default: "15"
-        type: string
+        default: 15
+        type: number
     secrets:
       NODE_AUTH_TOKEN:
         description: An authentication token for npm

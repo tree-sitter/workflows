@@ -40,8 +40,8 @@ inputs:
     type: string
   abi-version:
     description: The tree-sitter ABI version
-    default: "15"
-    type: string
+    default: 15
+    type: number
 ```
 
 <details>
@@ -106,8 +106,8 @@ inputs:
     type: boolean
   abi-version:
     description: The tree-sitter ABI version
-    default: "15"
-    type: string
+    default: 15
+    type: number
 secrets:
   NODE_AUTH_TOKEN:
     description: An authentication token for npm
@@ -136,8 +136,8 @@ inputs:
     type: boolean
   abi-version:
     description: The tree-sitter ABI version
-    default: "15"
-    type: string
+    default: 15
+    type: number
 secrets:
   CARGO_REGISTRY_TOKEN:
     description: An authentication token for crates.io
@@ -166,8 +166,8 @@ inputs:
     type: boolean
   abi-version:
     description: The tree-sitter ABI version
-    default: "15"
-    type: string
+    default: 15
+    type: number
 secrets:
   PYPI_API_TOKEN:
     description: An authentication token for pypi
@@ -294,8 +294,8 @@ updates:
 inputs:
   abi-version:
     description: The tree-sitter ABI version
-    default: "15"
-    type: string
+    default: 15
+    type: number
   node-version:
     description: The NodeJS version
     default: ${{vars.NODE_VERSION || 'lts/*'}}

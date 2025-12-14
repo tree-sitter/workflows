@@ -21,8 +21,8 @@ on:
         type: boolean
       abi-version:
         description: The tree-sitter ABI version
-        default: "15"
-        type: string
+        default: 15
+        type: number
     secrets:
       # TODO: make optional when pypi/warehouse#11096 is fixed
       PYPI_API_TOKEN:

@@ -5,8 +5,8 @@ on:
     inputs:
       abi-version:
         description: The tree-sitter ABI version
-        default: "15"
-        type: string
+        default: 15
+        type: number
       node-version:
         description: The NodeJS version
         default: ${{vars.NODE_VERSION || 'lts/*'}}
