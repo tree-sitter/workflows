@@ -54,35 +54,33 @@ jobs:
             with_entries(select(
             (.key | startswith("tree-sitter-"))
             and (.key != "tree-sitter-cli")
-            )) |
-            length > 0
+            )) | length > 0
       - name: Generate parser
         if: inputs.generate
         shell: bash
         run: |
-          while read -r grammar; do
-            grammar_dir=$(dirname "$grammar")
+          while read -r grammar_dir; do
             pushd "$grammar_dir"
             tree-sitter generate
             popd > /dev/null
-          done < <(find . -name grammar.js -not -path './node_modules/*')
+          done < <(find . -name grammar.js -not -path './node_modules/*' -printf '%h')
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Build Wasm binaries
         shell: bash
         run: |-
-          while read -r grammar; do
-            tree-sitter build --wasm "${grammar%/grammar.js}"
-          done < <(find . -name grammar.js -not -path './node_modules/*')
+          while read -r grammar_dir; do
+            tree-sitter build --wasm "$grammar_dir"
+          done < <(find . -name grammar.js -not -path './node_modules/*' -printf '%h')
       - name: Create source code tarball
         run: |
           git ls-files > "$RUNNER_TEMP/files"
-          while read -r grammar; do
-            : "$(dirname "$grammar")"; : "${_/\./}"; src_dir="$_${_:+/}src"
+          while read -r src_dir; do
+            [[ $src_dir == ./src ]] && src_dir=src
             printf '%s\n' >> "$RUNNER_TEMP/files" \
               "$src_dir"/parser.c "$src_dir"/grammar.json \
               "$src_dir"/node-types.json "$src_dir"/tree_sitter/*
-          done < <(find . -name grammar.js -not -path './node_modules/*')
+          done < <(find . -name grammar.js -not -path './node_modules/*' -printf '%h/src')
           tar cvzf "$REPO_NAME.tar.gz" -T <(sort -u "$RUNNER_TEMP/files")
       - name: Generate attestations
         uses: actions/attest-build-provenance@v3

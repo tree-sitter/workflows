@@ -56,17 +56,15 @@ jobs:
             with_entries(select(
             (.key | startswith("tree-sitter-"))
             and (.key != "tree-sitter-cli")
-            )) |
-            length > 0
+            )) | length > 0
       - name: Regenerate parser
         if: ${{inputs.generate}}
         run: |
-          while read -r grammar; do
-            grammar_dir=$(dirname "$grammar")
-            cd "$grammar_dir"
+          while read -r grammar_dir; do
+            pushd "$grammar_dir"
             tree-sitter generate
-            cd - > /dev/null
-          done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+            popd > /dev/null
+          done < <(find . -name grammar.js -not -path './node_modules/*' -printf '%h')
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Publish to crates.io

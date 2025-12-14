@@ -57,12 +57,11 @@ jobs:
       - name: Install parser dependencies
         run: |-
           npm i --legacy-peer-deps
-          while read -r grammar; do
-            grammar_dir=$(dirname "$grammar")
-            cd "$grammar_dir"
+          while read -r grammar_dir; do
+            pushd "$grammar_dir"
             npm x -- tree-sitter generate
-            cd - > /dev/null
-          done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+            popd > /dev/null
+          done < <(find . -name grammar.js -not -path './node_modules/*' -printf '%h')
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Update scanner

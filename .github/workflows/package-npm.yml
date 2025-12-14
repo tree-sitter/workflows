@@ -62,19 +62,18 @@ jobs:
       - name: Regenerate parser
         if: ${{inputs.generate}}
         run: |
-          while read -r grammar; do
-            grammar_dir=$(dirname "$grammar")
-            cd "$grammar_dir"
-            npm x -- tree-sitter generate
-            cd - > /dev/null
-          done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+          while read -r grammar_dir; do
+            pushd "$grammar_dir"
+            tree-sitter generate
+            popd > /dev/null
+          done < <(find . -name grammar.js -not -path './node_modules/*' -printf '%h')
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Build Wasm binaries
         run: |-
-          while read -r grammar; do
-            npm x -- tree-sitter build --wasm "${grammar%/grammar.js}"
-          done < <(find . -name grammar.js -not -path './node_modules/*')
+          while read -r grammar_dir; do
+            npm x -- tree-sitter build --wasm "$grammar_dir"
+          done < <(find . -name grammar.js -not -path './node_modules/*' -printf '%h')
       - name: Upload binaries
         uses: actions/upload-artifact@v6
         with:
@@ -108,12 +107,11 @@ jobs:
         if: ${{inputs.generate}}
         shell: bash
         run: |
-          while read -r grammar; do
-            grammar_dir=$(dirname "$grammar")
-            cd "$grammar_dir"
-            npm x -- tree-sitter generate
-            cd - > /dev/null
-          done < <(find . -name grammar.js -not -path './node_modules/*' -not -path './.build/*')
+          while read -r grammar_dir; do
+            pushd "$grammar_dir"
+            tree-sitter generate
+            popd > /dev/null
+          done < <(find . -name grammar.js -not -path './node_modules/*' -printf '%h')
       - name: Build binary
         run: npm x -- prebuildify -t 20.19.5
       - name: Upload binaries
