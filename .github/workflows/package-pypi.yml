@@ -72,7 +72,7 @@ jobs:
       - name: Build sources
         run: python -mbuild -n -s
       - name: Upload sources
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: dist-sources
           path: dist/*.tar.gz
@@ -122,13 +122,13 @@ jobs:
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.3
+        uses: pypa/cibuildwheel@v3.4
         with:
           output-dir: dist
         env:
           CIBW_ARCHS: native
       - name: Upload wheel artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           path: dist/*.whl
           name: dist-wheels-${{matrix.os}}
@@ -145,7 +145,7 @@ jobs:
     #   id-token: write
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           path: dist
           pattern: dist-*
