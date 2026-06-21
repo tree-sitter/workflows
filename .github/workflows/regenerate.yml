@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Fetch dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@v2
+        uses: dependabot/fetch-metadata@v3
     outputs:
       package-ecosystem: ${{steps.metadata.outputs.package-ecosystem}}
   regenerate:
@@ -47,7 +47,7 @@ jobs:
     if: needs.metadata.outputs.package-ecosystem == 'npm_and_yarn'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{github.head_ref}}
       - name: Set up NodeJS
