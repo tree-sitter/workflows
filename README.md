@@ -432,7 +432,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Set up tree-sitter
         uses: tree-sitter/setup-action/cli@v2
       - name: Run parser and binding tests
@@ -440,7 +440,7 @@ jobs:
         with:
           test-rust: true
       - name: Parse sample files
-        uses: tree-sitter/parse-action@v4
+        uses: tree-sitter/parse-action@v7
         id: parse-files
         with:
           files: examples/**
@@ -455,7 +455,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 2
       - name: Check for scanner changes
@@ -497,9 +497,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Set up NodeJS
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
       - name: Update dependencies
         uses: tree-sitter/parser-update-action@v1.1
         with:
