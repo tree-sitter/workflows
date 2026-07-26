@@ -105,7 +105,7 @@ inputs:
     type: string
   node-version:
     description: The NodeJS version
-    default: ${{vars.NODE_VERSION || '22'}}
+    default: ${{vars.NODE_VERSION || 'lts/*'}}
     type: string
   generate:
     description: Generate the parser artifacts
@@ -118,8 +118,12 @@ inputs:
 secrets:
   NODE_AUTH_TOKEN:
     description: An authentication token for npm
-    required: true
+    required: false
 ```
+
+> [!NOTE]
+> [Trusted Publishing](https://docs.npmjs.com/trusted-publishers)
+> will be used if `NODE_AUTH_TOKEN` is not set.
 
 ### crates options
 
@@ -148,8 +152,12 @@ inputs:
 secrets:
   CARGO_REGISTRY_TOKEN:
     description: An authentication token for crates.io
-    required: true
+    required: false
 ```
+
+> [!NOTE]
+> [Trusted Publishing](https://crates.io/docs/trusted-publishing)
+> will be used if `CARGO_REGISTRY_TOKEN` is not set.
 
 ### pypi options
 
@@ -178,8 +186,12 @@ inputs:
 secrets:
   PYPI_API_TOKEN:
     description: An authentication token for pypi
-    required: true
+    required: false
 ```
+
+> [!NOTE]
+> [Trusted Publishing](https://docs.pypi.org/trusted-publishers/)
+> will be enabled if `PYPI_API_TOKEN` is not set.
 
 ### maven options
 

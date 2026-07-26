@@ -26,7 +26,10 @@ on:
     secrets:
       NODE_AUTH_TOKEN:
         description: An authentication token for npm
-        required: true
+        required: false
+
+permissions:
+  id-token: write
 
 defaults:
   run:
