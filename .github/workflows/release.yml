@@ -51,7 +51,7 @@ jobs:
             pushd "$grammar_dir"
             tree-sitter generate
             popd > /dev/null
-          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+          done < <(jq -r '.grammars[] | .path // "."' tree-sitter.json)
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Build Wasm binaries
@@ -59,7 +59,7 @@ jobs:
         run: |-
           while read -r grammar_dir; do
             tree-sitter build --wasm "$grammar_dir"
-          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+          done < <(jq -r '.grammars[] | .path // "."' tree-sitter.json)
       - name: Create source code tarball
         run: |
           git ls-files > "$RUNNER_TEMP/files"
