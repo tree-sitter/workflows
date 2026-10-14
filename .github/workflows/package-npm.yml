@@ -15,6 +15,10 @@ on:
         description: The NodeJS version
         default: ${{vars.NODE_VERSION || '22'}}
         type: string
+      init:
+        description: Initialize a grammar repository
+        default: false
+        type: boolean
       generate:
         description: Generate the parser artifacts
         default: false
@@ -40,6 +44,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+      - name: Initialize grammar repository
+        if: ${{inputs.init}}
+        run: |
+          while read -r grammar_dir; do
+            pushd "$grammar_dir"
+            npm x -- tree-sitter init
+            popd > /dev/null
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
       - name: Set up NodeJS
         uses: actions/setup-node@v7
         with:
@@ -91,6 +103,16 @@ jobs:
           node-version: ${{inputs.node-version}}
       - name: Install dependencies
         run: npm i --omit peer --omit optional
+      - name: Initialize grammar repository
+        if: ${{inputs.init}}
+        shell: bash
+        run: |
+          while read -r grammar_dir; do
+            grammar_dir="${grammar_dir%$'\r'}"
+            pushd "$grammar_dir"
+            npm x -- tree-sitter init
+            popd > /dev/null
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
       - name: Regenerate parser
         if: ${{inputs.generate}}
         shell: bash
