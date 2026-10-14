@@ -3,6 +3,10 @@ name: Publish GitHub release
 on:
   workflow_call:
     inputs:
+      init:
+        description: Initialize a grammar repository
+        default: false
+        type: boolean
       generate:
         description: Generate the parser artifacts
         default: false
@@ -43,6 +47,15 @@ jobs:
             (.key | startswith("tree-sitter-"))
             and (.key != "tree-sitter-cli")
             )) | length > 0
+      - name: Initialize grammar repository
+        if: inputs.init
+        shell: bash
+        run: |
+          while read -r grammar_dir; do
+            pushd "$grammar_dir"
+            tree-sitter init
+            popd > /dev/null
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
       - name: Generate parser
         if: inputs.generate
         shell: bash

@@ -15,6 +15,10 @@ on:
         description: The Python version
         default: ${{vars.PYTHON_VERSION || '3.11'}}
         type: string
+      init:
+        description: Initialize a grammar repository
+        default: false
+        type: boolean
       generate:
         description: Generate the parser artifacts
         default: false
@@ -42,7 +46,7 @@ jobs:
         with:
           python-version: ${{inputs.python-version}}
       - name: Set up tree-sitter CLI
-        if: ${{inputs.generate}}
+        if: ${{inputs.generate || inputs.init}}
         uses: tree-sitter/setup-action/cli@v2
       - name: Install dependencies
         run: |-
@@ -56,6 +60,15 @@ jobs:
             (.key | startswith("tree-sitter-"))
             and (.key != "tree-sitter-cli")
             )) | length > 0
+      - name: Initialize grammar repository
+        if: ${{inputs.init}}
+        shell: bash
+        run: |
+          while read -r grammar_dir; do
+            pushd "$grammar_dir"
+            tree-sitter init
+            popd > /dev/null
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
       - name: Regenerate parser
         if: ${{inputs.generate}}
         shell: bash
@@ -94,7 +107,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
       - name: Set up tree-sitter CLI
-        if: ${{inputs.generate}}
+        if: ${{inputs.generate || inputs.init}}
         uses: tree-sitter/setup-action/cli@v2
       - name: Install dependencies
         shell: bash
@@ -109,6 +122,16 @@ jobs:
             (.key | startswith("tree-sitter-"))
             and (.key != "tree-sitter-cli")
             )) | length > 0
+      - name: Initialize grammar repository
+        if: ${{inputs.init}}
+        shell: bash
+        run: |
+          while read -r grammar_dir; do
+            grammar_dir="${grammar_dir%$'\r'}"
+            pushd "$grammar_dir"
+            tree-sitter init
+            popd > /dev/null
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
       - name: Regenerate parser
         if: ${{inputs.generate}}
         shell: bash
