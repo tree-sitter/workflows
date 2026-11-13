@@ -54,14 +54,14 @@ jobs:
             pushd "$grammar_dir"
             npm x -- tree-sitter generate
             popd > /dev/null
-          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+          done < <(jq -r '.grammars[] | .path // "."' tree-sitter.json)
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Build Wasm binaries
         run: |-
           while read -r grammar_dir; do
             npm x -- tree-sitter build --wasm "$grammar_dir"
-          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+          done < <(jq -r '.grammars[] | .path // "."' tree-sitter.json)
       - name: Upload binaries
         uses: actions/upload-artifact@v7
         with:
@@ -100,7 +100,7 @@ jobs:
             pushd "$grammar_dir"
             npm x -- tree-sitter generate
             popd > /dev/null
-          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+          done < <(jq -r '.grammars[] | .path // "."' tree-sitter.json)
       - name: Build binary
         run: npm x -- prebuildify -t 20.19.5
       - name: Upload binaries

@@ -114,7 +114,7 @@ jobs:
             pushd "$grammar_dir"
             tree-sitter generate
             popd > /dev/null
-          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+          done < <(jq -r '.grammars[] | .path // "."' tree-sitter.json)
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
       - name: Publish to Maven Central
