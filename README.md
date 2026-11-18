@@ -105,7 +105,7 @@ inputs:
     type: string
   node-version:
     description: The NodeJS version
-    default: ${{vars.NODE_VERSION || '22'}}
+    default: ${{vars.NODE_VERSION || '24'}}
     type: string
   generate:
     description: Generate the parser artifacts
