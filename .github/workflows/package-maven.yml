@@ -23,6 +23,10 @@ on:
         description: The Java distribution
         default: temurin
         type: string
+      init:
+        description: Initialize a grammar repository
+        default: false
+        type: boolean
       generate:
         description: Generate the parser artifacts
         default: false
@@ -90,7 +94,7 @@ jobs:
           server-password: MAVEN_CENTRAL_TOKEN
           gpg-private-key: ${{secrets.GPG_PRIVATE_KEY}}
       - name: Set up tree-sitter CLI
-        if: ${{inputs.generate}}
+        if: ${{inputs.generate || inputs.init}}
         uses: tree-sitter/setup-action/cli@v2
       - name: Install dependencies
         if: ${{inputs.generate}}
@@ -106,6 +110,15 @@ jobs:
             (.key | startswith("tree-sitter-"))
             and (.key != "tree-sitter-cli")
             )) | length > 0
+      - name: Initialize grammar repository
+        if: ${{inputs.init}}
+        shell: bash
+        run: |
+          while read -r grammar_dir; do
+            pushd "$grammar_dir"
+            tree-sitter init
+            popd > /dev/null
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
       - name: Regenerate parser
         if: ${{inputs.generate}}
         shell: bash

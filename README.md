@@ -31,6 +31,10 @@ jobs:
 
 ```yaml
 inputs:
+  init:
+    description: Initialize a grammar repository
+    default: false
+    type: boolean
   generate:
     description: Generate the parser artifacts
     default: false
@@ -107,6 +111,10 @@ inputs:
     description: The NodeJS version
     default: ${{vars.NODE_VERSION || '22'}}
     type: string
+  init:
+    description: Initialize a grammar repository
+    default: false
+    type: boolean
   generate:
     description: Generate the parser artifacts
     default: false
@@ -137,6 +145,10 @@ inputs:
     description: The Rust toolchain
     default: ${{vars.RUST_TOOLCHAIN || 'stable'}}
     type: string
+  init:
+    description: Initialize a grammar repository
+    default: false
+    type: boolean
   generate:
     description: Generate the parser artifacts
     default: false
@@ -167,6 +179,10 @@ inputs:
     description: The Python version
     default: ${{vars.PYTHON_VERSION || '3.x'}}
     type: string
+  init:
+    description: Initialize a grammar repository
+    default: false
+    type: boolean
   generate:
     description: Generate the parser artifacts
     default: false
@@ -205,6 +221,10 @@ inputs:
     description: The Java distribution
     default: temurin
     type: string
+  init:
+    description: Initialize a grammar repository
+    default: false
+    type: boolean
   generate:
     description: Generate the parser artifacts
     default: false

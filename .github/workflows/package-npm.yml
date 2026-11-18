@@ -15,6 +15,10 @@ on:
         description: The NodeJS version
         default: ${{vars.NODE_VERSION || '22'}}
         type: string
+      init:
+        description: Initialize a grammar repository
+        default: false
+        type: boolean
       generate:
         description: Generate the parser artifacts
         default: false
@@ -43,20 +47,31 @@ jobs:
       - name: Set up NodeJS
         uses: actions/setup-node@v7
         with:
-          cache: npm
+          cache: ${{!inputs.init && 'npm' || ''}}
           node-version: ${{inputs.node-version}}
-      - name: Install dependencies
-        run: npm i --omit peer --omit optional
+      - name: Set up tree-sitter CLI
+        if: ${{inputs.init}}
+        uses: tree-sitter/setup-action/cli@v2
+      - name: Initialize grammar repository
+        if: ${{inputs.init}}
+        run: |
+          while read -r grammar_dir; do
+            pushd "$grammar_dir"
+            tree-sitter init
+            popd > /dev/null
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
       - name: Regenerate parser
         if: ${{inputs.generate}}
         run: |
           while read -r grammar_dir; do
             pushd "$grammar_dir"
-            npm x -- tree-sitter generate
+            tree-sitter generate
             popd > /dev/null
           done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
         env:
           TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
+      - name: Install dependencies
+        run: npm i --omit peer --omit optional
       - name: Build Wasm binaries
         run: |-
           while read -r grammar_dir; do
@@ -87,10 +102,20 @@ jobs:
       - name: Set up NodeJS
         uses: actions/setup-node@v7
         with:
-          cache: npm
+          cache: ${{!inputs.init && 'npm' || ''}}
           node-version: ${{inputs.node-version}}
-      - name: Install dependencies
-        run: npm i --omit peer --omit optional
+      - name: Set up tree-sitter CLI
+        if: ${{inputs.init}}
+        uses: tree-sitter/setup-action/cli@v2
+      - name: Initialize grammar repository
+        if: ${{inputs.init}}
+        run: |
+          while read -r grammar_dir; do
+            grammar_dir="${grammar_dir%$'\r'}"
+            pushd "$grammar_dir"
+            tree-sitter init
+            popd > /dev/null
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
       - name: Regenerate parser
         if: ${{inputs.generate}}
         shell: bash
@@ -98,9 +123,13 @@ jobs:
           while read -r grammar_dir; do
             grammar_dir="${grammar_dir%$'\r'}"
             pushd "$grammar_dir"
-            npm x -- tree-sitter generate
+            tree-sitter generate
             popd > /dev/null
           done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
+        env:
+          TREE_SITTER_ABI_VERSION: ${{inputs.abi-version}}
+      - name: Install dependencies
+        run: npm i --omit peer --omit optional
       - name: Build binary
         run: npm x -- prebuildify -t 20.19.5
       - name: Upload binaries
@@ -123,9 +152,20 @@ jobs:
       - name: Set up NodeJS
         uses: actions/setup-node@v7
         with:
-          cache: npm
+          cache: ${{!inputs.init && 'npm' || ''}}
           node-version: ${{inputs.node-version}}
           registry-url: https://registry.npmjs.org/
+      - name: Set up tree-sitter CLI
+        if: ${{inputs.init}}
+        uses: tree-sitter/setup-action/cli@v2
+      - name: Initialize grammar repository
+        if: ${{inputs.init}}
+        run: |
+          while read -r grammar_dir; do
+            pushd "$grammar_dir"
+            tree-sitter init
+            popd > /dev/null
+          done < <(jq -r '.grammars[].path // "."' tree-sitter.json)
       - name: Download binaries
         uses: actions/download-artifact@v8
         with:
