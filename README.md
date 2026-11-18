@@ -436,16 +436,16 @@ jobs:
       - name: Set up tree-sitter
         uses: tree-sitter/setup-action/cli@v2
       - name: Run parser and binding tests
-        uses: tree-sitter/parser-test-action@v2
+        uses: tree-sitter/parser-test-action@v3
         with:
           test-rust: true
       - name: Parse sample files
-        uses: tree-sitter/parse-action@v7
+        uses: tree-sitter/parse-action@v5
         id: parse-files
         with:
           files: examples/**
       - name: Upload failures artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: "!cancelled() && steps.parse-files.outcome == 'failure'"
         with:
           name: failures-${{runner.os}}
@@ -499,9 +499,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
       - name: Set up NodeJS
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
       - name: Update dependencies
-        uses: tree-sitter/parser-update-action@v1.1
+        uses: tree-sitter/parser-update-action@v1.2
         with:
           parent-name: c
           language-name: cpp
